@@ -4,9 +4,10 @@ A growing collection of technical learning notes, practical references, and revi
 
 ## Browse the notes
 
-The catalogue website is published with GitHub Pages:
+The catalogue website and individual topic articles are published with GitHub Pages:
 
 - **Website:** https://mubendiran.github.io/Notes-of-Mube/
+- **Docker article:** https://mubendiran.github.io/Notes-of-Mube/docker.html
 
 PDF files are hosted in the public Google Drive folder. This repository contains the catalogue website, not duplicate copies of the PDFs.
 
