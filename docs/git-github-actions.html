@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Git and GitHub Actions notes by Mubendiran K: architecture, essential commands, branches, remotes, workflows, runners and artifacts.">
+<title>Git &amp; GitHub Actions | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Beginner</div>
+<h1>Git &amp; GitHub Actions</h1>
+<p class="sub">A structured, readable version of my Git and GitHub Actions learning and revision notes. This article follows the topics and commands in the original 3-page notes.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 3-page source notes · <a href="https://drive.google.com/file/d/1U6HIhUVNPD7w5rqNyatCuyOHgMOtWmFF/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2402030?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#architecture">1. Git architecture</a><a href="#commands">2. Essential commands</a><a href="#advanced">3. History, restore and amend</a><a href="#remotes">4. Remotes and push</a><a href="#branches">5. Branches, merge and rebase</a><a href="#actions">6. GitHub Actions</a><a href="#runners">7. Runners, variables and artifacts</a><a href="#workflow">8. Starter workflow</a>
+</div></nav>
+<article>
+<p>Git is a distributed version control system used to record project history and collaborate. These notes cover the local Git workflow, the commands used to inspect and share that history, and GitHub Actions as the CI/CD layer that runs automated work when repository events happen.</p>
+
+<h2 id="architecture">1. Git architecture</h2>
+<p>The notes introduce Git as <em>Global Information Tracker</em>, a system built to handle everything from small projects to very large ones with speed. In the <a href="https://git-scm.com/docs/git" target="_blank" rel="noopener">Git manual</a>, “global information tracker” is a playful expansion used when Git is working well. The name itself is the short command Linus Torvalds chose; it is not a formal acronym.</p>
+<p>A change moves through three local areas before it reaches a remote host. The notes draw that path as files in a working directory, a staging area, and then commit history in the local repository.</p>
+<div class="diagram"><strong>From working files to a remote</strong>
+<div class="flow"><span class="node">Files<br>(html, css, js)</span><span class="arrow">→</span><span class="node">Working directory</span><span class="arrow">→</span><span class="node">Staging area<br>index / cache<br><code>git add</code></span></div>
+<div class="flow"><span class="node">Local repository<br>commit history · HEAD<br><code>git commit</code></span><span class="arrow">→</span><span class="node">Remote host</span></div>
+<div class="flow"><span class="node">GitHub</span><span class="node">GitLab</span><span class="node">Bitbucket</span><span class="node">AWS CodeCommit</span></div>
+</div>
+<ul>
+<li><strong>Working directory:</strong> the project files you edit.</li>
+<li><strong>Staging area:</strong> the snapshot you prepare with <code>git add</code>. The notes also call this the index or cache. Those are names for the same area.</li>
+<li><strong>Local repository:</strong> the commit history. <code>HEAD</code> points at the current commit on the current branch.</li>
+<li><strong>Remote:</strong> a hosted copy. The notes list GitHub, Bitbucket, AWS CodeCommit and GitLab.</li>
+</ul>
+<div class="callout"><strong>Remember:</strong> <code>git commit</code> records what is staged. Edits that are still only in the working directory are not part of that commit.</div>
+
+<h2 id="commands">2. Essential commands</h2>
+<p>Set an identity before the first commit. Git stores the name and email on each commit so history shows who made the change. <code>--global</code> writes those settings for the current user, not for one repository only.</p>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>git config --global user.name "name"</code></td><td>Sets the name recorded on commits.</td></tr>
+<tr><td><code>git config --global user.email "mail.com"</code></td><td>Sets the email recorded on commits.</td></tr>
+<tr><td><code>git config -l</code></td><td>Lists configuration, including name, email and aliases.</td></tr>
+<tr><td><code>git init</code></td><td>Turns the current directory into a Git repository.</td></tr>
+<tr><td><code>git status</code></td><td>Shows the state of the working directory and the staging area.</td></tr>
+<tr><td><code>git add &lt;files&gt;</code></td><td>Stages the named files.</td></tr>
+<tr><td><code>git rm --cached &lt;files&gt;</code></td><td>Removes files from the index and leaves the copies in the working directory.</td></tr>
+<tr><td><code>git add -A</code> or <code>git add .</code></td><td>Stages new, modified and deleted files.</td></tr>
+<tr><td><code>git commit -m "content"</code></td><td>Records the staged snapshot in local history with that message.</td></tr>
+<tr><td><code>git log</code></td><td>Shows commit history: author, time and the unique commit hash.</td></tr>
+</tbody></table>
+<p><code>git rm --cached</code> is the command to use when a file should stop being tracked but should stay on disk. If the file was already committed, the next commit records the deletion from the repository. Add the path to <code>.gitignore</code> if Git should keep ignoring it.</p>
+<p class="note">The notes list <code>git add -A</code> and <code>git add .</code> together. In current Git, both stage new files, modifications and deletions. <code>git add -A</code> covers the whole repository. <code>git add .</code> covers the current directory and everything under it.</p>
+<h3>A short local loop</h3>
+<pre><code>git init
+git status
+git add .
+git commit -m "Start the notes"
+git log</code></pre>
+<h3>Useful additions for day-to-day work</h3>
+<pre><code># Compact status
+git status -sb
+
+# Recent history as one line per commit
+git log --oneline --graph --decorate -n 15</code></pre>
+<p class="note">These two commands are reading aids. They are not in the original notes.</p>
+
+<h2 id="advanced">3. History, restore and amend</h2>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>git show &lt;hash&gt;</code></td><td>Shows one commit, including its diff.</td></tr>
+<tr><td><code>git diff</code></td><td>Shows changes in working files compared with the staging area or the last commit.</td></tr>
+<tr><td><code>git restore</code></td><td>Restores working-tree files, or discards the latest uncommitted changes.</td></tr>
+<tr><td><code>git commit --amend -m "message"</code></td><td>Replaces the latest commit message, or updates that commit with newly staged changes.</td></tr>
+</tbody></table>
+<p><code>git diff</code> with no extra flags compares the working directory with the staging area. To see what is already staged against the last commit, use <code>git diff --staged</code>. The notes describe both comparisons under the one command.</p>
+<pre><code># Discard unstaged edits in one file
+git restore &lt;file&gt;
+
+# Unstage a file and keep the working copy
+git restore --staged &lt;file&gt;
+
+# Replace the message on the latest commit
+git commit --amend -m "Clearer message"</code></pre>
+<div class="callout"><strong>Amend with care:</strong> <code>--amend</code> rewrites the latest commit and gives it a new hash. Use it while that commit is still only on your machine. If you already pushed it, rewriting it changes history that other people may have fetched.</div>
+<p class="note"><code>git restore &lt;file&gt;</code> throws away uncommitted edits in that file. It does not change commits that are already in history.</p>
+
+<h2 id="remotes">4. Remotes and push</h2>
+<p>A remote is the hosted repository your local history is connected to. The notes use the conventional remote name <code>origin</code>.</p>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>git remote add origin &lt;URL&gt;</code></td><td>Connects this local repository to a remote URL.</td></tr>
+<tr><td><code>git branch</code></td><td>Lists local branch names, such as <code>master</code> or <code>main</code>.</td></tr>
+<tr><td><code>git branch -M main</code></td><td>Renames the current branch to <code>main</code>.</td></tr>
+<tr><td><code>git push</code></td><td>Sends committed local changes to the remote.</td></tr>
+<tr><td><code>git branch -r</code></td><td>Lists remote-tracking branches.</td></tr>
+<tr><td><code>git branch -a</code></td><td>Lists local and remote-tracking branches.</td></tr>
+</tbody></table>
+<p><code>-M</code> is a forced rename of the current branch. The notes use it so the local branch matches the <code>main</code> name expected by many remote hosts. The first push of a new branch also needs an upstream. A common form is:</p>
+<pre><code>git push -u origin main</code></pre>
+<p class="note">The original notes show <code>git push</code> on its own. The <code>-u</code> form is an additional setup step so later <code>git push</code> and <code>git pull</code> know which remote branch to use.</p>
+
+<h2 id="branches">5. Branches, merge and rebase</h2>
+<p>A branch is a movable name for a line of commits. The notes use a feature branch, then bring that work back with merge or rebase.</p>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>git branch &lt;name&gt;</code></td><td>Creates a branch. It does not switch to it.</td></tr>
+<tr><td><code>git checkout &lt;feature-a&gt;</code></td><td>Switches the working branch to <code>feature-a</code>.</td></tr>
+<tr><td><code>git checkout -</code></td><td>Switches back to the previous branch.</td></tr>
+<tr><td><code>git branch -d &lt;name&gt;</code></td><td>Deletes that local branch.</td></tr>
+<tr><td><code>git merge &lt;branchname&gt;</code></td><td>Merges the named branch into the branch you are on.</td></tr>
+<tr><td><code>git pull -r origin master</code></td><td>Fetches remote updates and rebases the local branch on top of them.</td></tr>
+<tr><td><code>git rebase --continue</code></td><td>Continues a rebase after conflicts are resolved.</td></tr>
+</tbody></table>
+<pre><code>git branch feature-a
+git checkout feature-a
+# edit, add, commit
+git checkout main
+git merge feature-a
+git branch -d feature-a</code></pre>
+<p><code>git pull -r</code> is <code>git pull --rebase</code>. The notes use <code>origin master</code>. If the remote branch is <code>main</code>, the matching command is <code>git pull -r origin main</code>. Rebase takes your local commits and replays them after the commits just fetched from the remote.</p>
+<p>If a rebase stops on a conflict, fix the files, stage the resolutions with <code>git add</code>, then run <code>git rebase --continue</code>. <code>git rebase --abort</code> returns the branch to the state it had before that rebase started.</p>
+<div class="callout"><strong>Merge and rebase do different jobs:</strong> merge joins two lines of history and can add a merge commit. Rebase rewrites your local commits so they sit on top of the updated remote branch. Rebase local commits that have not been shared, or agree with the team before rewriting commits that others already have.</div>
+<p class="note">Current Git also has <code>git switch &lt;branch&gt;</code> and <code>git switch -c &lt;name&gt;</code> for changing and creating branches. The notes use <code>git checkout</code>, which still performs those branch switches. <code>git branch -d</code> refuses to delete a branch that is not fully merged. <code>git branch -D</code> deletes it anyway.</p>
+
+<h2 id="actions">6. GitHub Actions</h2>
+<p>GitHub Actions is the CI/CD platform in the notes: continuous integration and continuous deployment. It automates build, test and deployment pipelines inside a GitHub repository.</p>
+<ul>
+<li><strong>Workflow triggers:</strong> a workflow can build and test every pull request, or deploy pull requests after they are merged.</li>
+<li><strong>Beyond a deploy pipeline:</strong> workflows can also run on other repository events, such as a new issue or a release tag.</li>
+<li><strong>Workflow:</strong> a configurable automated process that runs one or more jobs.</li>
+<li><strong>YAML file:</strong> the workflow definition, checked into the repository. GitHub runs it when an event happens, when someone starts it manually, or on a schedule.</li>
+<li><strong>What a workflow can do:</strong> build, test, package, release and deploy a project on GitHub.</li>
+</ul>
+<p>GitHub reads workflow files from <code>.github/workflows/</code>. A push to the default branch, a pull request, <code>workflow_dispatch</code> for a manual run, and <code>schedule</code> with a cron expression are the trigger styles the notes describe.</p>
+<div class="diagram"><strong>What runs a workflow</strong>
+<div class="flow"><span class="node">Event, manual run, or schedule</span><span class="arrow">→</span><span class="node">Workflow YAML</span><span class="arrow">→</span><span class="node">One or more jobs</span><span class="arrow">→</span><span class="node">Runner</span></div>
+</div>
+
+<h2 id="runners">7. Runners, variables and artifacts</h2>
+<h3>Runners</h3>
+<p>A runner is the machine that executes a workflow when its trigger and job dependencies are met. GitHub-hosted runners are fresh virtual machines. The notes list separate runner images for Linux, Windows, macOS and more. A job selects one with <code>runs-on</code>, for example <code>ubuntu-latest</code>.</p>
+<p>If those hosted images are not enough, the notes say to add a self-hosted runner. That is a machine you register with the repository or organisation. The workflow then uses that runner instead of a GitHub-hosted image.</p>
+<h3>Why the notes use self-hosted runners</h3>
+<table><thead><tr><th>Reason</th><th>What the notes are solving</th></tr></thead><tbody>
+<tr><td>Software dependency</td><td>Build or test tools that are not on the hosted runner images.</td></tr>
+<tr><td>VM size and configuration</td><td>Larger or specialised hardware for heavy jobs.</td></tr>
+<tr><td>Secure access and networking</td><td>A private network, internal services, or a security policy the hosted runners cannot meet.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Self-hosted caution:</strong> a self-hosted runner can reach whatever that machine can reach. Do not let untrusted pull-request code run on a runner that holds private network access or long-lived credentials. GitHub documents this boundary in its <a href="https://docs.github.com/en/actions/concepts/runners/self-hosted-runners" target="_blank" rel="noopener">self-hosted runner guidance</a>.</div>
+<h3>Environment variables</h3>
+<p>The notes set custom variables with an <code>env</code> map and read them where a step needs them. A workflow can also read the default environment variables GitHub sets on every runner, and it can read workflow or runner details through GitHub contexts such as <code>github</code>, <code>runner</code>, <code>env</code> and <code>secrets</code>.</p>
+<pre><code>env:
+  APP_ENV: staging
+
+jobs:
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "APP_ENV is ${APP_ENV}"
+      - run: echo "Repo ${GITHUB_REPOSITORY} at ${GITHUB_SHA} on ${RUNNER_OS}"</code></pre>
+<p class="note"><code>APP_ENV</code> is a custom variable from the notes' <code>env:</code> pattern. <code>GITHUB_REPOSITORY</code>, <code>GITHUB_SHA</code> and <code>RUNNER_OS</code> are default environment variables. The full list is in GitHub's <a href="https://docs.github.com/en/actions/reference/workflows-and-actions/variables" target="_blank" rel="noopener">variables reference</a>. Do not print secret values into logs.</p>
+<h3>Artifacts</h3>
+<p>Artifacts share files between jobs and keep those files after the workflow finishes. A later job downloads what an earlier job uploaded. The stored files remain available on the workflow run for the retention period configured on the repository.</p>
+<pre><code>- uses: actions/upload-artifact@v4
+  with:
+    name: build-output
+    path: dist/
+
+- uses: actions/download-artifact@v4
+  with:
+    name: build-output
+    path: dist/</code></pre>
+<p class="note">Upload and download are the mechanism behind the notes' “share data between jobs, and store data once the workflow has completed.” Keep secrets and credentials out of artifacts.</p>
+
+<h2 id="workflow">8. Starter workflow</h2>
+<p>This workflow is an additional teaching example. It is not copied from the original notes. It builds the ideas from the GitHub Actions page into one file: a trigger, one job, a hosted runner, a checkout of the commit, and a test command.</p>
+<pre><code>name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: echo "Replace this with the project's test command"</code></pre>
+<p>Save it as <code>.github/workflows/ci.yml</code>. A pull request, or a push to <code>main</code>, starts the <code>test</code> job on a fresh Ubuntu runner. Replace the echo step with the real test command for the project.</p>
+<h3>References</h3>
+<ul>
+<li><a href="https://git-scm.com/doc" target="_blank" rel="noopener">Git documentation</a></li>
+<li><a href="https://docs.github.com/en/actions/get-started/understand-github-actions" target="_blank" rel="noopener">GitHub Actions overview</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax" target="_blank" rel="noopener">Workflow syntax</a></li>
+</ul>
+<p class="note">Original material: Git &amp; GitHub Actions notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>

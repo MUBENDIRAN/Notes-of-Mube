@@ -8,6 +8,7 @@ The catalogue website and individual topic articles are published with GitHub Pa
 
 - **Website:** https://mubendiran.github.io/Notes-of-Mube/
 - **Docker article:** https://mubendiran.github.io/Notes-of-Mube/docker.html
+- **Git & GitHub Actions article:** https://mubendiran.github.io/Notes-of-Mube/git-github-actions.html
 
 ## 📄 PDF Notes Collection
 All original PDF notes are organized in one central Google Drive folder.
