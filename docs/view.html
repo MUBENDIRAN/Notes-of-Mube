@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Read technical notes from Notes of Mube.">
+  <title>Read Notes | Notes of Mube</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, sans-serif; color: #172033; background: #f8fafc; }
+    header { padding: 18px 22px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; align-items: center; }
+    header a { color: #2563eb; text-decoration: none; font-weight: 650; }
+    main { width: min(100% - 28px, 1100px); margin: 24px auto; }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; }
+    p { color: #64748b; margin: 0 0 16px; }
+    .viewer { width: 100%; height: min(78vh, 900px); min-height: 520px; border: 1px solid #dbe3ed; border-radius: 12px; background: #fff; }
+    .notice { padding: 24px; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; }
+    .actions { display: flex; gap: 16px; flex-wrap: wrap; margin: 14px 0; }
+    a { color: #2563eb; }
+    @media (max-width: 600px) { .viewer { min-height: 65vh; height: 65vh; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="./">← Back to Notes of Mube</a>
+    <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio</a>
+  </header>
+  <main>
+    <h1 id="title">Read the notes</h1>
+    <p>The PDF is previewed from Google Drive. It is not duplicated in this GitHub repository.</p>
+    <div id="missing" class="notice" hidden>
+      <strong>No Google Drive file ID was provided.</strong>
+      <p>Open the catalogue and connect a Drive file ID to the resource card.</p>
+      <a href="./">Return to the notes catalogue</a>
+    </div>
+    <iframe id="pdf" class="viewer" title="PDF document preview" allow="autoplay" loading="lazy" hidden></iframe>
+    <div class="actions" id="actions" hidden>
+      <a id="open" target="_blank" rel="noopener">Open PDF in Google Drive</a>
+      <a href="./">Back to all notes</a>
+    </div>
+  </main>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || '';
+    const title = params.get('title') || 'Read the notes';
+    const validId = /^[a-zA-Z0-9_-]{10,}$/.test(id);
+    document.title = title + ' | Notes of Mube';
+    document.getElementById('title').textContent = title;
+    if (validId) {
+      const previewUrl = 'https://drive.google.com/file/d/' + encodeURIComponent(id) + '/preview';
+      const pdf = document.getElementById('pdf');
+      pdf.src = previewUrl;
+      pdf.hidden = false;
+      const open = document.getElementById('open');
+      open.href = 'https://drive.google.com/file/d/' + encodeURIComponent(id) + '/view';
+      document.getElementById('actions').hidden = false;
+    } else {
+      document.getElementById('missing').hidden = false;
+    }
+  </script>
+</body>
+</html>
