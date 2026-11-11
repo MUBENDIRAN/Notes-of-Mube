@@ -1,6 +1,6 @@
 # Notes of Mube
 
-A growing collection of technical learning notes, practical references, and revision materials prepared and shared by **Mubendiran K**.
+A collection of technical learning notes, practical references, and revision materials prepared and shared by **Mubendiran K**.
 
 ## Browse the notes
 
@@ -9,14 +9,10 @@ The catalogue website and individual topic articles are published with GitHub Pa
 - **Website:** https://mubendiran.github.io/Notes-of-Mube/
 - **Docker article:** https://mubendiran.github.io/Notes-of-Mube/docker.html
 
-PDF files are hosted in the public Google Drive folder. This repository contains the catalogue website, not duplicate copies of the PDFs.
-
-## Adding a new resource
-
-1. Upload the PDF to the **Notes of Mube** Google Drive folder.
-2. Set access to **Anyone with the link — Viewer**.
-3. Add a resource card to `docs/index.html` with its title, topic, description, and Google Drive sharing URL.
-4. Commit the change. The Pages website will update after deployment.
+## 📄 PDF Notes Collection
+All original PDF notes are organized in one central Google Drive folder.
+You can access the available learning materials using the link below.
+- Google Drive: [Browse All PDF Notes](https://drive.google.com/drive/folders/1fSiA2IEFMjMlPXSi82VXjLil2bzd-qKe)
 
 ## About the author
 
