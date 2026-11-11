@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Docker beginner notes by Mubendiran K: containers, images, Dockerfiles, commands, storage, networking, Compose and Swarm.">
+<title>Docker for Beginners | Notes of Mube</title>
+<style>
+:root{--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Beginner</div>
+<h1>Docker for Beginners</h1>
+<p class="sub">A structured, readable version of my Docker learning and revision notes. This article follows the topics and examples in the original 15-page notes.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 15-page source notes · Learning reference</div>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#containers">1. Containers and Docker Engine</a><a href="#vm">2. Containers vs Virtual Machines</a><a href="#images">3. Images and Docker Hub</a><a href="#commands">4. Core commands</a><a href="#dockerfile">5. Dockerfiles</a><a href="#execution">6. Execution and flags</a><a href="#mounts">7. Storage and mounts</a><a href="#networking">8. Networking</a><a href="#compose">9. Docker Compose</a><a href="#swarm">10. Docker Swarm</a><a href="#registry">11. Registries and references</a>
+</div></nav>
+<article>
+<p>Docker is a platform used to package and run applications in containers. These notes introduce the container environment, image workflow, common commands, storage, networking, multi-container applications and Swarm.</p>
+
+<h2 id="containers">1. Containers and Docker Engine</h2>
+<h3>What is a container?</h3>
+<p>A container is a loosely isolated environment that runs within a host machine's kernel and allows application-specific code to run. The notes describe a container environment as having an independent file system and local networks, while running application-specific code.</p>
+<div class="diagram"><strong>Docker Engine structure</strong><div class="flow"><span class="node">Docker Engine</span></div><div class="flow"><span class="node">Docker server</span><span class="node">API</span><span class="node">CLI</span></div><p class="note">The Docker server runs the daemon, a background process.</p><div class="flow"><span class="node">Docker CLI</span><span class="arrow">→</span><span class="node">Docker daemon</span><span class="arrow">→</span><span class="node">Host kernel</span></div></div>
+<p>The command-line interface sends requests to the Docker daemon. The daemon manages Docker objects such as containers and images through the Docker Engine API.</p>
+
+<h2 id="vm">2. Containers vs Virtual Machines</h2>
+<p>The original notes introduce a comparison between containers and virtual machines. At a high level, containers share the host operating-system kernel, while virtual machines run separate guest operating systems on virtualized hardware.</p>
+<table><thead><tr><th>Containers</th><th>Virtual machines</th></tr></thead><tbody><tr><td>Share the host kernel.</td><td>Run a guest operating system.</td></tr><tr><td>Package application code and its dependencies.</td><td>Include an operating system and application environment.</td></tr><tr><td>Typically lighter to start and run.</td><td>Typically use more resources because each VM includes an OS.</td></tr></tbody></table>
+<p class="note">This comparison is a short explanatory summary; the source PDF contains the section heading and comparison illustration, but no detailed written comparison.</p>
+
+<h2 id="images">3. Docker Images and Docker Hub</h2>
+<h3>Docker image</h3>
+<p>A Docker image is a read-only template of instructions for creating a Docker container. It defines the container's code, libraries, environment variables, configuration files and other required content. One image can be used to create many containers.</p>
+<h3>Docker Hub</h3>
+<p>Docker Hub hosts images in online repositories and allows users to find and obtain images published by other users and organisations.</p>
+
+<h2 id="commands">4. Core Docker commands</h2>
+<p>Use <code>--help</code> to see command options.</p>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>docker search &lt;image_name&gt;</code></td><td>Search for an image.</td></tr>
+<tr><td><code>docker create --name=&lt;name&gt; -it &lt;image&gt; bash</code></td><td>Create a container with a name and interactive terminal settings.</td></tr>
+<tr><td><code>docker container ls</code></td><td>List running containers.</td></tr>
+<tr><td><code>docker start &lt;container_name&gt;</code></td><td>Start a stopped container.</td></tr>
+<tr><td><code>docker attach &lt;container_name&gt;</code></td><td>Attach to a running container's input/output stream. The notes list <code>Ctrl + P</code>, then <code>Ctrl + Q</code> to detach.</td></tr>
+<tr><td><code>docker logs &lt;container_name&gt;</code></td><td>View container logs.</td></tr>
+<tr><td><code>docker stop &lt;container_name&gt;</code></td><td>Stop a container.</td></tr>
+<tr><td><code>docker rm &lt;container_name&gt;</code></td><td>Remove a container.</td></tr>
+<tr><td><code>docker run --name=&lt;name&gt; -it &lt;image&gt; bash</code></td><td>Create and start a container.</td></tr>
+<tr><td><code>docker image ls</code></td><td>List local images.</td></tr>
+</tbody></table>
+<p>The notes explain <code>-it</code> as interactive terminal use. The <code>-i</code> flag keeps standard input open, and <code>-t</code> allocates a pseudo-terminal.</p>
+
+<h2 id="dockerfile">5. Dockerfiles and directives</h2>
+<p>A Dockerfile contains instructions used to build an image.</p>
+<h3>Example directives from the notes</h3>
+<table><thead><tr><th>Directive</th><th>Meaning</th><th>Example</th></tr></thead><tbody>
+<tr><td><code>FROM</code></td><td>Selects the base image.</td><td><code>FROM node:latest</code></td></tr>
+<tr><td><code>RUN</code></td><td>Executes a command while building the image.</td><td><code>RUN npm install -g serve</code></td></tr>
+<tr><td><code>COPY</code></td><td>Copies files and directories into the image filesystem.</td><td><code>COPY ./display ./display</code></td></tr>
+<tr><td><code>WORKDIR</code></td><td>Sets the working directory for subsequent instructions.</td><td><code>WORKDIR /app</code></td></tr>
+<tr><td><code>CMD</code></td><td>Defines the default command to run when a container starts.</td><td><code>CMD ["node", "serve.js"]</code></td></tr>
+<tr><td><code>EXPOSE</code></td><td>Documents the port the application is expected to listen on.</td><td><code>EXPOSE 80</code></td></tr>
+</tbody></table>
+<h3>CMD formats</h3>
+<p>The notes show two forms:</p>
+<pre><code># Shell form
+CMD serve ./display
+
+# Exec form (preferred in the notes)
+CMD ["node", "serve.js"]</code></pre>
+<p>Exec form supplies the executable and arguments as a JSON array. Shell form runs through a shell.</p>
+<h3>Copying project files</h3>
+<pre><code>COPY . .</code></pre>
+<p>The notes describe this as copying the local project contents into the container's current working directory.</p>
+
+<h2 id="execution">6. Container execution, flags and caching</h2>
+<h3>Run a container in detached mode and publish a port</h3>
+<pre><code>docker run --name=&lt;name&gt; -d -p 3000:80 &lt;image_name&gt;</code></pre>
+<ul><li><code>-d</code> runs the container in detached/background mode.</li><li><code>-p 3000:80</code> maps host port 3000 to container port 80.</li></ul>
+<h3>Execute a command inside a running container</h3>
+<pre><code>docker exec -it &lt;container_name&gt; bash</code></pre>
+<h3>.dockerignore</h3>
+<p>A <code>.dockerignore</code> file excludes unnecessary files from the build context. The notes list examples such as <code>.git/</code>, <code>node_modules</code>, <code>README.md</code> and <code>package-lock.json</code>.</p>
+<h3>Layer caching</h3>
+<p>Docker can reuse cached build layers when the relevant instructions and inputs have not changed. The notes recommend placing dependency installation before copying frequently changing source files.</p>
+<pre><code>RUN npm install
+COPY . .</code></pre>
+<p>This ordering can avoid reinstalling dependencies every time application source files change, provided the dependency inputs remain unchanged.</p>
+<h3>EXPOSE</h3>
+<p><code>EXPOSE 80</code> documents that the application is intended to listen on port 80 inside the container. It does not publish the port to the host by itself; use <code>-p</code> or another networking configuration to make a port reachable.</p>
+
+<h2 id="mounts">7. Docker storage and mount types</h2>
+<p>The notes cover three mount types: volumes, bind mounts and tmpfs mounts.</p>
+<table><thead><tr><th>Mount type</th><th>How it works</th><th>Typical use from the notes</th></tr></thead><tbody>
+<tr><td>Volume</td><td>Docker-managed persistent storage.</td><td>Sharing data, logs, database queues and multi-container pipelines.</td></tr>
+<tr><td>Bind mount</td><td>Maps a real host path into a container.</td><td>Local development loops and exporting artifacts.</td></tr>
+<tr><td>tmpfs</td><td>Stores files in memory rather than persistent disk.</td><td>Short-lived files and sensitive temporary data.</td></tr>
+</tbody></table>
+<h3>Volume mounts</h3>
+<p>Volumes are managed by Docker and can be shared across containers. The notes describe them as useful for remote server scenarios and log access.</p>
+<h3>Bind mounts</h3>
+<p>Bind mounts connect a host directory to a container directory. They are useful during development, but a process in the container may modify the mounted host files if permissions allow it. Treat this as a security boundary to manage carefully.</p>
+<h3>tmpfs mounts</h3>
+<p>tmpfs mounts keep data in memory and the data is removed when the container stops. The notes mention short-lived files, secrets and encryption keys as possible use cases. Ensure the chosen storage and threat model are appropriate before placing sensitive material there.</p>
+<div class="diagram"><strong>Mount relationship</strong><div class="flow"><span class="node">Host filesystem</span><span class="arrow">— bind mount →</span><span class="node">Container filesystem</span></div><div class="flow"><span class="node">Docker-managed volume</span><span class="arrow">— volume mount →</span><span class="node">Container filesystem</span></div><div class="flow"><span class="node">RAM</span><span class="arrow">— tmpfs mount →</span><span class="node">Container memory filesystem</span></div></div>
+<h3>Mount commands</h3>
+<pre><code># Create/use a named volume
+docker run -it --name=&lt;name&gt; --mount source=myvol,target=/src/shared ubuntu bash
+
+# Remove a volume
+docker volume rm &lt;name&gt;
+
+# Bind mount
+docker run -it --name=&lt;name&gt; --mount type=bind,source=/users/stuff,target=/src/mountdir &lt;image&gt; bash
+
+# tmpfs mount
+docker run -d -it --name=&lt;name&gt; --mount type=tmpfs,destination=/app ubuntu bash
+
+# Inspect a container
+docker inspect &lt;container&gt;</code></pre>
+
+<h2 id="networking">8. Docker networking</h2>
+<p>Docker networks allow containers to communicate with one another and with external networks, depending on the network configuration.</p>
+<h3>Default network drivers in the notes</h3>
+<table><thead><tr><th>Network</th><th>Summary</th></tr></thead><tbody>
+<tr><td>Bridge</td><td>The default bridge network. Containers connected to it receive container IP addresses.</td></tr>
+<tr><td>None</td><td>Disables normal network connectivity for the container.</td></tr>
+<tr><td>Host</td><td>The container shares the host network namespace and uses host networking.</td></tr>
+</tbody></table>
+<h3>User-defined private networks</h3>
+<p>The notes recommend private networks so containers can communicate using container names rather than requiring the user to find each container's IP address.</p>
+<pre><code># List networks
+docker network ls
+
+# Inspect a network
+docker network inspect bridge
+
+# Create a network
+docker network create PrivateNet
+
+# Run a container attached to that network
+docker run -dit --name=&lt;name&gt; --network=PrivateNet busybox</code></pre>
+<p>To remove containers in bulk, the notes show:</p>
+<pre><code>docker container ls -aq | xargs docker rm -f</code></pre>
+
+<h2 id="compose">9. Docker Compose</h2>
+<p>Docker Compose is a tool for defining and running applications that consist of multiple containers. In a Compose file, each container configuration is defined as a service, commonly in <code>compose.yaml</code> or <code>docker-compose.yml</code>.</p>
+<h3>Compose file structure</h3>
+<pre><code>services:
+  players:
+    build: ./players</code></pre>
+<p>The source notes show a top-level <code>version: '3'</code> field. Modern Docker Compose uses the Compose Specification and does not require a top-level version field.</p>
+<h3>Common Compose concepts</h3>
+<ul><li><strong>services:</strong> defines the application's services.</li><li><strong>build:</strong> specifies the build context for an image.</li><li><strong>image:</strong> specifies an image to use.</li><li><strong>depends_on:</strong> expresses service startup dependencies.</li><li><strong>volumes:</strong> mounts host paths or named volumes into services.</li><li><strong>networks:</strong> defines networks used by services.</li></ul>
+<h3>Compose commands</h3>
+<pre><code># Create and start services
+docker compose up
+
+# Build images before starting services
+docker compose up --build</code></pre>
+<p>Using volumes or bind mounts can make local development faster because source changes can be reflected without rebuilding an image for every edit.</p>
+<div class="callout"><strong>Multi-container benefit:</strong> Compose lets you define related services together, configure their networks and storage, and start the application with one command.</div>
+
+<h2 id="swarm">10. Docker Swarm</h2>
+<p>Docker Swarm is a clustering and orchestration mode in which multiple Docker Engine instances work together as a swarm.</p>
+<h3>Nodes, managers and workers</h3>
+<ul><li><strong>Node:</strong> A machine participating in the swarm.</li><li><strong>Manager node:</strong> Organises the cluster and assigns work to worker nodes.</li><li><strong>Worker node:</strong> Executes assigned tasks and reports status.</li></ul>
+<h3>Services and replicas</h3>
+<p>A Swarm service describes the desired state for a workload based on a container image. A service can run multiple replicas across nodes. The notes also mention routing mesh and overlay networking for cluster traffic.</p>
+<div class="diagram"><strong>Swarm service flow</strong><div class="flow"><span class="node">Website / Service</span><span class="arrow">→</span><span class="node">Swarm cluster</span></div><div class="flow"><span class="node">Engine node 1</span><span class="node">Engine node 2</span><span class="node">Engine node 3</span></div></div>
+<h3>Ports listed in the notes</h3>
+<table><thead><tr><th>Port</th><th>Protocol</th><th>Purpose</th></tr></thead><tbody><tr><td>2377</td><td>TCP</td><td>Cluster management communication.</td></tr><tr><td>7946</td><td>TCP and UDP</td><td>Communication among nodes.</td></tr><tr><td>4789</td><td>UDP</td><td>Overlay network traffic.</td></tr></tbody></table>
+<h3>Swarm commands</h3>
+<pre><code># Initialise a swarm
+docker swarm init --advertise-addr &lt;ip-address&gt;
+
+# List nodes
+docker node ls
+
+# Create a service and publish port 80
+docker service create --name=&lt;name&gt; --publish=80:80 &lt;image&gt;
+
+# List tasks for a service
+docker service ps &lt;service-name&gt;
+
+# Update the service replica count
+docker service update --replicas 6 &lt;service-name&gt;</code></pre>
+<p>The notes describe Swarm benefits as load balancing, service discovery, production readiness and scalability.</p>
+
+<h2 id="registry">11. Docker Hub, cloud registries and references</h2>
+<p>Container registries store and distribute container images. The notes distinguish Docker Hub from AWS Elastic Container Registry (ECR), noting that ECR is the AWS-managed registry used to store container images in AWS.</p>
+<p>Common workflow: build an image, tag it for the target registry, authenticate, and push it to the registry. The original notes mention Docker Hub push and cloud container registries, including AWS ECR.</p>
+<h3>References listed in the original notes</h3>
+<ul><li><a href="https://docs.docker.com/get-started/" target="_blank" rel="noopener">Official Docker Get Started documentation</a></li><li><a href="https://www.geeksforgeeks.org/devops/docker-tutorial/" target="_blank" rel="noopener">GeeksforGeeks Docker tutorial</a></li><li><a href="https://www.geeksforgeeks.org/docker/docker-commands/" target="_blank" rel="noopener">GeeksforGeeks Docker commands guide</a></li></ul>
+
+<div class="source-note"><strong>Editorial note:</strong> This article is based on Mubendiran K's uploaded 15-page notes. A few explanations have been clarified for readability and technical precision. The source's Docker Cloud section is retained only as historical material: Docker Cloud was discontinued, so it should not be treated as a current service. Always check current official Docker documentation for command behaviour and product status.</div>
+<p class="note">Original material: Docker notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
