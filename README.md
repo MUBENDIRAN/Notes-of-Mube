@@ -16,6 +16,7 @@ The catalogue website and individual topic articles are published with GitHub Pa
 - **Python article:** https://mubendiran.github.io/Notes-of-Mube/python.html
 - **Backend and AI article:** https://mubendiran.github.io/Notes-of-Mube/backend-ai.html
 - **System design article:** https://mubendiran.github.io/Notes-of-Mube/system-design.html
+- **JavaScript, TypeScript and Express article:** https://mubendiran.github.io/Notes-of-Mube/js-ts-express.html
 
 ## 📄 PDF Notes Collection
 All original PDF notes are organized in one central Google Drive folder.

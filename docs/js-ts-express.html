@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="JavaScript, TypeScript and Express notes by Mubendiran K: language basics, async, Zod, tokens and frameworks.">
+<title>JavaScript, TypeScript &amp; Express | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · JavaScript, TypeScript and Express</div>
+<h1>JavaScript, TypeScript &amp; Express</h1>
+<p class="sub">A structured, readable version of my JavaScript, TypeScript and Express notes. This article follows the nine chapters in the original 13-page notes, from variables and types through async code, Zod, tokens and the framework map.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 13-page source notes · <a href="https://drive.google.com/file/d/1JFFt-VPzobJiLRmRrBz-xOz2XyjtpgIs/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2403765?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#fundamentals">1. Variables and functions</a><a href="#data">2. Arrays, equality and null</a><a href="#modules">3. Modules and npm</a><a href="#typescript">4. TypeScript</a><a href="#async">5. Promises and async</a><a href="#express">6. Express, Zod and fetch</a><a href="#auth">7. Tokens and signing</a><a href="#frameworks">8. Frameworks</a><a href="#references">9. References</a>
+</div></nav>
+<article>
+<p>The notes move from the language, to the project files, to a small Express API, and then to how a token is signed. The examples below are the ones in the PDF, completed far enough to show the result the notes describe.</p>
+
+<h2 id="fundamentals">1. Variables, collections and callbacks</h2>
+<table><thead><tr><th>Declaration</th><th>What the notes say</th></tr></thead><tbody>
+<tr><td><code>const</code></td><td>Cannot be reassigned.</td></tr>
+<tr><td><code>let</code></td><td>Can be reassigned.</td></tr>
+</tbody></table>
+<div class="callout"><strong><code>const</code> locks the binding, not the contents.</strong> The notes' own array is declared with <code>const</code> and then changed with <code>push</code>. That is legal. <code>const</code> forbids <code>users = somethingElse</code>. It does not freeze the array or the object. <code>Object.freeze</code> is what blocks mutation, and even that is shallow.</div>
+<pre><code>const users = ["pavi", "rithik", "Mube"];
+users[0]            // "pavi" — indexes start at 0
+users.length        // 3
+users.push("Raj")   // appends; users is now length 4</code></pre>
+<p>An array keeps values in order. The notes compare it with a Python list, which is the same idea as in the <a href="python.html">Python notes</a>. An object keeps named fields. Their user is <code>{ username: "Mube", likes: 5 }</code>, the shape of a dict.</p>
+<table><thead><tr><th>Function</th><th>Arrow function</th></tr></thead><tbody>
+<tr><td><code>function add(a, b) { return a + b; }</code></td><td><code>const add = (a, b) =&gt; a + b;</code></td></tr>
+</tbody></table>
+<p>An arrow with a single expression and no braces returns that expression. Braces make a block, and a block returns only what you <code>return</code>. Otherwise the result is <code>undefined</code>.</p>
+<div class="callout"><strong>An arrow function does not get its own <code>this</code>.</strong> The syntax table in the notes is right about <code>return</code>. The other difference matters in callbacks. A normal function receives <code>this</code> from the call. An arrow uses the <code>this</code> of the surrounding scope, has no <code>arguments</code> object, and cannot be used with <code>new</code>.</div>
+<p>A callback is a function passed into another function. The notes' example calls it immediately with a name. Express middleware, in the later chapter, is the same shape: a function the framework will call when a request arrives.</p>
+<pre><code>function processUser(callback) {
+  callback("Mube");
+}
+processUser((name) =&gt; console.log(name));  // Mube</code></pre>
+
+<h2 id="data">2. Array methods, equality and null</h2>
+<table><thead><tr><th>Method</th><th>Notes' example</th><th>Result</th></tr></thead><tbody>
+<tr><td><code>map</code></td><td><code>[1, 2].map(n =&gt; n * 2)</code></td><td><code>[2, 4]</code>. One new value per element.</td></tr>
+<tr><td><code>filter</code></td><td><code>[1, 2].filter(n =&gt; n &gt; 1)</code></td><td><code>[2]</code>. Always an array. No match gives <code>[]</code>, not <code>undefined</code>.</td></tr>
+<tr><td><code>find</code></td><td><code>[1, 2, 3].find(n =&gt; n &gt; 1)</code></td><td><code>2</code>, the first match. No match gives <code>undefined</code>.</td></tr>
+<tr><td><code>reduce</code></td><td><code>[1, 2, 3].reduce((a, b) =&gt; a + b, 0)</code></td><td><code>6</code>. The <code>0</code> is the starting total.</td></tr>
+</tbody></table>
+<p><code>map</code> and <code>filter</code> return a new array. They do not replace the one you called them on. The <code>0</code> in <code>reduce</code> matters: without a starting value, the first element becomes the start and an empty array throws.</p>
+<h3>Destructuring and defaults</h3>
+<pre><code>const user = { username: "Mube", age: 20 };
+const { username, age } = user;
+
+const { role = "user" } = {};
+console.log(role);  // "user"</code></pre>
+<p>The default is used only when the property is missing or <code>undefined</code>. <code>null</code> is a present value, so <code>{ role: null }</code> leaves <code>role</code> as <code>null</code>. That is the rule the notes state. The PDF's example only shows the missing-property case.</p>
+<h3>Equality and truthiness</h3>
+<p><code>5 == "5"</code> is true, because <code>==</code> converts the types first. <code>5 === "5"</code> is false, because <code>===</code> compares the value and the type. Prefer <code>===</code> unless you have a reason to convert.</p>
+<p>The notes' falsy values are <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code> and <code>NaN</code>. <code>-0</code> and <code>0n</code> are falsy too. Almost everything else is truthy, including <code>[]</code> and <code>{}</code>. An empty array is not a reason for an <code>if</code> to skip the block.</p>
+<h3>Optional chaining and <code>??</code></h3>
+<pre><code>const post = { author: null };
+console.log(post.author?.username);  // undefined, no throw</code></pre>
+<p><code>?.</code> stops the property read when the value on its left is <code>null</code> or <code>undefined</code>. The notes' warning is the useful one: it prevents that crash. It does not check that the username is a real user, a string, or present in the database.</p>
+<table><thead><tr><th>Operator</th><th>When the fallback is used</th></tr></thead><tbody>
+<tr><td><code>??</code></td><td>Only <code>null</code> or <code>undefined</code>. <code>0 ?? 10</code> is <code>0</code>. <code>"" ?? "guest"</code> is <code>""</code>.</td></tr>
+<tr><td><code>||</code></td><td>Any falsy value. <code>0 || 10</code> is <code>10</code>. <code>"" || "guest"</code> is <code>"guest"</code>.</td></tr>
+</tbody></table>
+<p class="note">Those four results are the notes' rule applied to the values they name. The PDF states the rule and does not print the four lines.</p>
+
+<h2 id="modules">3. Modules and npm</h2>
+<table><thead><tr><th>ES modules</th><th>CommonJS</th></tr></thead><tbody>
+<tr><td><code>export const add = (a, b) =&gt; a + b;</code><br><code>import { add } from "./math.js";</code></td><td><code>module.exports = { add };</code><br><code>const { add } = require("./math.js");</code></td></tr>
+</tbody></table>
+<p>Node treats a <code>.js</code> file as CommonJS unless <code>package.json</code> contains <code>"type": "module"</code>, or the file is <code>.mjs</code>. The <code>import</code> lines in the notes run only in that mode. A <code>.cjs</code> file stays CommonJS either way.</p>
+<div class="callout"><strong><code>package.json</code> declares ranges. The lockfile records the tree.</strong> The notes give “the dependency tree” to both files. <code>package.json</code> is the project: name, scripts, and the ranges you asked for, such as <code>^4.18.0</code>. <code>package-lock.json</code> is the exact versions npm resolved, including nested dependencies. Commit the lockfile so the next install can repeat that tree.</div>
+<table><thead><tr><th>Command</th><th>What the notes use it for</th></tr></thead><tbody>
+<tr><td><code>npm init -y</code></td><td>Writes a starting <code>package.json</code> without asking questions.</td></tr>
+<tr><td><code>npm install</code></td><td>Installs the dependencies already listed. <code>npm install express</code> also adds a package to that list.</td></tr>
+<tr><td><code>npm start</code></td><td>Runs the <code>start</code> script. If that script is missing, npm falls back to <code>node server.js</code>.</td></tr>
+<tr><td><code>npm test</code></td><td>Runs the <code>test</code> script. There is no fallback command. A missing script is an error.</td></tr>
+<tr><td><code>npm ci</code></td><td>A clean install from the lockfile. It removes <code>node_modules</code> first and fails if the lockfile is missing or does not match <code>package.json</code>. It does not update the lockfile.</td></tr>
+</tbody></table>
+
+<h2 id="typescript">4. TypeScript</h2>
+<p>TypeScript is JavaScript plus a type system. The check happens before the program runs. The types are then erased, and what executes is JavaScript. The notes' annotation is <code>let username: string = "MUBE";</code>.</p>
+<table><thead><tr><th></th><th>Form in the notes</th></tr></thead><tbody>
+<tr><td>Annotation</td><td>You write the type. <code>let score: number = 100;</code></td></tr>
+<tr><td>Inference</td><td>TypeScript reads it from the value. <code>let score = 100;</code> is a number.</td></tr>
+</tbody></table>
+<p>A union allows more than one type. After <code>let id: string | number</code>, both <code>id = "MUBE 101"</code> and <code>id = 101</code> type-check. Before you call a string method, narrow it: <code>typeof value === "string"</code>. <code>typeof</code> is the right test for the primitives in that union. It is a poor test for objects, because <code>typeof null</code> is <code>"object"</code>.</p>
+<pre><code>interface User {
+  name: string;
+  age: number;
+  email?: string;   // the property may be omitted
+}
+
+type ID = string | number;
+let userID: ID = "U101";</code></pre>
+<p>The notes use an interface for an object shape and a type alias for a union. That split matches how the two forms differ. An interface describes an object and can be reopened later by another declaration of the same name. A type alias can name any type, including a union, a primitive, or a function. They are not interchangeable in every position, even though both can describe an object.</p>
+<pre><code>function identity&lt;T&gt;(value: T): T { return value; }
+identity&lt;string&gt;("FACZ");
+identity&lt;number&gt;(100);</code></pre>
+<p><code>T</code> is the type chosen at the call. The notes write it out. TypeScript will also infer it from the argument, so <code>identity("FACZ")</code> is a string too. The explicit form is what the PDF shows.</p>
+
+<h2 id="async">5. Promises, combinators and async</h2>
+<table><thead><tr><th>State</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td>Pending</td><td>Still running.</td></tr>
+<tr><td>Fulfilled</td><td>Finished with a value.</td></tr>
+<tr><td>Rejected</td><td>Finished with a failure.</td></tr>
+</tbody></table>
+<p><code>then</code> takes the value. <code>catch</code> takes the failure. <code>finally</code> runs after the promise has settled, either way, and does not by itself replace the value or the error.</p>
+<table><thead><tr><th>Combinator</th><th>When it settles</th></tr></thead><tbody>
+<tr><td><code>Promise.all</code></td><td>Fulfills when every promise fulfills. Rejects as soon as one rejects. The notes use it when you need all of the results and the requests can run together. The others keep running after that rejection. You just do not get their values from <code>all</code>.</td></tr>
+<tr><td><code>Promise.allSettled</code></td><td>Waits until every promise has fulfilled or rejected, then fulfills with one result per input.</td></tr>
+<tr><td><code>Promise.race</code></td><td>Settles with whichever promise settles first, including a rejection.</td></tr>
+<tr><td><code>Promise.any</code></td><td>Fulfills with the first fulfillment. Rejects only when every promise rejects.</td></tr>
+</tbody></table>
+<p>An <code>async</code> function always returns a promise. <code>return 1</code> inside it becomes a fulfilled promise of <code>1</code>. <code>await</code> pauses that function until the promise settles. If the promise rejects, <code>await</code> throws, so the handler is <code>try/catch</code> around the <code>await</code>, not only a <code>catch</code> on a chain you no longer have.</p>
+<p>Blocking code holds the JavaScript thread until it returns. A long loop is blocking. A network call is not: other tasks can run while it is pending, and the callback runs later. The notes' timer rule is the same idea. <code>setTimeout(fn, 0)</code> does not run <code>fn</code> in the middle of the current function. It runs after that synchronous code finishes.</p>
+
+<h2 id="express">6. Express, middleware, Zod and fetch</h2>
+<p>Express is a Node framework for HTTP servers and APIs. The method and the request fields in the notes line up with the <a href="backend-ai.html#http">HTTP notes</a>:</p>
+<table><thead><tr><th>Piece</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>app.get</code> / <code>app.post</code></td><td>Register a handler for that method.</td></tr>
+<tr><td><code>req.params</code></td><td>Values taken from the path, such as <code>/users/:id</code>.</td></tr>
+<tr><td><code>req.query</code></td><td>Values after the <code>?</code>.</td></tr>
+<tr><td><code>req.body</code></td><td>The parsed body. It stays empty until body-parsing middleware has run.</td></tr>
+<tr><td><code>express.json()</code></td><td>That middleware for a JSON body. Mount it before the route that reads <code>req.body</code>.</td></tr>
+<tr><td><code>res.json</code></td><td>Sends a JSON response and sets the content type.</td></tr>
+</tbody></table>
+<p>The lifecycle diagram in the PDF is this order:</p>
+<div class="diagram"><strong>Request path in the notes</strong>
+<div class="flow"><span class="node">Client</span><span class="arrow">→</span><span class="node">Gateway</span><span class="arrow">→</span><span class="node">Middleware</span><span class="arrow">→</span><span class="node">Route</span></div>
+<div class="flow"><span class="node">Service</span><span class="arrow">→</span><span class="node">Database</span><span class="arrow">→</span><span class="node">Response</span></div>
+</div>
+<p>The route handler owns the HTTP request and response. The service owns the business rule. Middleware is the shared step: authentication, logging, validation. A middleware function sees <code>req</code> and <code>res</code>. <code>next()</code> hands the request to the next function. An error-handling middleware is written <code>(err, req, res, next)</code>. Express treats a function as an error handler when it has those four parameters, so dropping <code>next</code> because it looks unused changes which kind of middleware you registered.</p>
+<div class="callout"><strong>A middleware that neither answers nor calls <code>next</code> leaves the request hanging.</strong> That is the notes' warning. The client waits until it times out. Validate on the server as well. A check in the browser can be skipped. The notes' example is the post text: it has to be present, and it has to fit the length you allow, before anything is saved.</div>
+<h3>Zod</h3>
+<p>TypeScript removes types before the program runs, so a JSON body is untyped data at the route. Zod checks that data while the request is happening. <code>safeParse</code> returns an object whose <code>success</code> field is the check the notes tell you to read. <code>parse</code> throws instead of returning that object.</p>
+<pre><code>const parsed = schema.safeParse(req.body);
+if (!parsed.success) {
+  return res.status(400).json({ error: parsed.error.issues });
+}
+// parsed.data is the value the schema accepted</code></pre>
+<p class="note">The PDF says to check <code>result.success</code>. It does not print this handler. <code>400</code> matches the invalid-input status in the HTTP notes. Zod's own examples often use the issues list the same way.</p>
+<h3>fetch</h3>
+<div class="callout"><strong>A 404 does not reject <code>fetch</code>.</strong> <code>fetch</code> returns a promise, and <code>response.ok</code> is true only for status codes 200 through 299. A 404 or a 500 still fulfills the promise. The promise rejects when the network fails: DNS, a dropped connection, or an abort. After a successful HTTP round trip you still have to look at <code>response.ok</code> before trusting the body. <code>response.json()</code> is itself asynchronous. <code>AbortController</code> cancels a request that is still in flight.</div>
+
+<h2 id="auth">7. Tokens, the gateway and signing</h2>
+<p>An access token is the short-lived credential a client sends to a protected API. A refresh token is how the notes get a new access token without asking the user to sign in again. The refresh step is a separate, controlled call. It is not a second copy of the access token.</p>
+<div class="callout"><strong>A JWT payload is readable. Signing is not encryption.</strong> The notes say the payload is not automatically encrypted. The three segments are Base64url text. Anyone who has the token can decode the middle segment and read the claims. The signature tells you whether the bytes changed after they were signed. It does not hide them. Do not put a password or a secret in the payload.</div>
+<p>The gateway diagram is the trust boundary:</p>
+<div class="diagram"><strong>Gateway trust, the path in the notes</strong>
+<div class="flow"><span class="node">Client</span><span class="arrow">→</span><span class="node">Public gateway</span><span class="arrow">→</span><span class="node">Internal service</span></div>
+<p class="note">The gateway checks the JWT, strips client-supplied identity headers, then adds its own.</p>
+</div>
+<p>The gateway is the only public entrance. On a protected route it verifies the JWT. It deletes any <code>x-user</code> or <code>x-gateway-secret</code> the client sent, because a caller can set those headers to whatever they like. It then adds its own <code>x-user</code>, which the notes describe as Base64-encoded JSON of the identity, and a shared secret. An internal service accepts <code>x-user</code> only together with that secret. Base64 is an encoding. It is not encryption, and it is not proof that the header came from the gateway. A service that is reachable without the gateway cannot treat <code>x-user</code> as identity.</p>
+<h3>Hashing and signatures</h3>
+<table><thead><tr><th></th><th>What the notes are naming</th></tr></thead><tbody>
+<tr><td>SHA</td><td>The Secure Hash Algorithm family. The notes say “Secure Hashing Algorithm.” A cryptographic hash is one-way: the digest does not give you the original input back, and the same input always hashes to the same digest. SHA-256 and SHA-512 are the ones paired with the signatures below. The name is a family, not a single function.</td></tr>
+<tr><td>HMAC</td><td>Hash-based Message Authentication Code. A secret is mixed into the message, then a hash is taken. Someone without the secret cannot produce a matching code. This still is not encryption. The message can sit beside the code in the clear.</td></tr>
+<tr><td>HS256, HS512</td><td>HMAC with SHA-256 or SHA-512. One secret both creates and checks the signature. The notes call this the single-system case. Every service that can verify the token can also mint one, because it holds that secret.</td></tr>
+<tr><td>RS256</td><td>RSA with SHA-256. RSA is Rivest–Shamir–Adleman. The private key signs. The public key only verifies, and it can be shared. This is the notes' case when more than one system must check a token and must not be able to create one.</td></tr>
+</tbody></table>
+
+<h2 id="frameworks">8. Where the frameworks sit</h2>
+<p>The notes' last map assumes the earlier chapters: components, modules, <code>async</code>/<code>await</code>, and HTTP APIs. They also name GraphQL next to REST, without a separate section on it. GraphQL is another way for a client to ask a server for data. It is not a new runtime.</p>
+<table><thead><tr><th>Layer</th><th>Frameworks in the notes</th><th>How they describe it</th></tr></thead><tbody>
+<tr><td>Frontend, client-side</td><td>React, Angular, Vue, Svelte</td><td>Runs in the browser. Loads JSON with <code>fetch</code> and redraws the page from components and state. Dashboards, SaaS apps, admin panels, single-page apps.</td></tr>
+<tr><td>Backend</td><td>Express, NestJS, Fastify, Koa, Hono</td><td>Runs on Node, or on an edge server. Routing, middleware, the database, Zod, JWT. REST APIs, microservices, an authentication gateway, real-time backends. NestJS is the TypeScript-first one in the list.</td></tr>
+<tr><td>Server-rendered and full-stack</td><td>Next.js, Angular Universal, Nuxt, SvelteKit, Remix</td><td>The server produces HTML first, then the browser continues. SEO sites, shops, blogs, and apps that contain their own API routes. Angular's server rendering is now part of Angular itself. The notes still use the Universal name. Remix's application model now lives in React Router.</td></tr>
+<tr><td>Mobile</td><td>React Native with Expo, Ionic, NativeScript</td><td>JavaScript or TypeScript components draw native views, or a web view inside a native shell. One codebase talks to the same APIs. Ionic, in the notes, can sit on Angular, React or Vue.</td></tr>
+</tbody></table>
+<div class="diagram"><strong>The full-stack picture in the notes</strong>
+<div class="flow"><span class="node">React, Angular, React Native</span><span class="arrow">→</span><span class="node">Next.js or a gateway</span><span class="arrow">→</span><span class="node">Express or NestJS</span><span class="arrow">→</span><span class="node">Database</span></div>
+</div>
+
+<h2 id="references">9. References in the notes</h2>
+<h3>JavaScript</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener">MDN JavaScript guide</a>.</li>
+<li><a href="https://javascript.info/" target="_blank" rel="noopener">The Modern JavaScript Tutorial</a>.</li>
+<li><a href="https://v8.dev/blog" target="_blank" rel="noopener">V8 blog</a>. The notes point here for engine internals and performance. It is the project blog, not a single internals manual.</li>
+<li><a href="https://web.dev/blog" target="_blank" rel="noopener">web.dev blog</a>.</li>
+</ul>
+<h3>TypeScript</h3>
+<ul>
+<li><a href="https://www.typescriptlang.org/docs/handbook/intro.html" target="_blank" rel="noopener">TypeScript handbook</a>.</li>
+<li><a href="https://devblogs.microsoft.com/typescript/" target="_blank" rel="noopener">TypeScript blog</a> on Microsoft's developer blogs.</li>
+<li><a href="https://www.totaltypescript.com/articles" target="_blank" rel="noopener">Total TypeScript articles</a>.</li>
+</ul>
+<h3>Express, Node and Zod</h3>
+<ul>
+<li><a href="https://expressjs.com/en/guide/routing/" target="_blank" rel="noopener">Express routing</a>. The notes cite <code>routing.html</code>. The guide now lives at this path.</li>
+<li><a href="https://expressjs.com/en/blog/" target="_blank" rel="noopener">Express blog</a>, including security releases.</li>
+<li><a href="https://nodejs.org/learn/getting-started/introduction-to-nodejs" target="_blank" rel="noopener">Introduction to Node.js</a>. The notes include an <code>/en/</code> prefix. The current page is this one.</li>
+<li><a href="https://zod.dev/" target="_blank" rel="noopener">Zod</a>.</li>
+</ul>
+<p class="note">Original material: JavaScript, TypeScript and Express notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
