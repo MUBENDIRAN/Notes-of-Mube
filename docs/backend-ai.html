@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Backend and AI notes by Mubendiran K: shells, Agile, REST, FastAPI, SQL safety, RAG, agents and inference.">
+<title>Backend &amp; AI | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Backend and AI</div>
+<h1>Backend &amp; AI</h1>
+<p class="sub">A structured, readable version of my backend and AI notes. This article follows the 13 chapters in the original 18-page notes, from the shell and REST through FastAPI, RAG and agents.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 18-page source notes · <a href="https://drive.google.com/file/d/19cmudnYbIMzm4aUOI0s8g0FB1IewOp29/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2403731?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#environment">1. Environment</a><a href="#agile">2. Agile and DevOps</a><a href="#http">3. HTTP and status codes</a><a href="#rest">4. REST</a><a href="#fastapi">5. FastAPI and ASGI</a><a href="#lists">6. Lists and pagination</a><a href="#sql">7. SQL safety and NoSQL</a><a href="#frontend">8. Pages and WebSockets</a><a href="#llm">9. LLMs and training</a><a href="#rag">10. RAG</a><a href="#agents">11. Agents and MCP</a><a href="#eval">12. Evaluation and inference</a><a href="#references">13. References</a>
+</div></nav>
+<article>
+<p>The notes start at the terminal, move through how a team ships an HTTP API, and then cross into language models, retrieval and agents. The diagrams in the PDF did not come through as text. Where a figure is reconstructed, the caption says so.</p>
+
+<h2 id="environment">1. Environment and the shell</h2>
+<p>Before the backend code, the notes put you in a command-line shell, a Python virtual environment, and a package installer. The <a href="linux.html">Linux notes</a> cover the shell in more detail. The names here are the ones this chapter lists.</p>
+<table><thead><tr><th>Shell</th><th>What the name refers to</th></tr></thead><tbody>
+<tr><td>Bash</td><td>The Bourne Again Shell. It is the default interactive shell on many Linux systems.</td></tr>
+<tr><td>Zsh</td><td>A Bash-like shell. It is the default on current macOS.</td></tr>
+<tr><td>Fish</td><td>A shell with its own syntax. It is not a POSIX <code>sh</code>.</td></tr>
+<tr><td>sh</td><td>The POSIX shell. On a given machine <code>/bin/sh</code> is often a link to another shell.</td></tr>
+<tr><td>Dash</td><td>A small POSIX shell. Debian and Ubuntu use it as <code>/bin/sh</code>.</td></tr>
+<tr><td>PowerShell</td><td>A shell whose pipeline carries objects. It runs on Windows and elsewhere.</td></tr>
+<tr><td>Nushell</td><td>A shell whose pipeline carries structured data rather than plain text.</td></tr>
+</tbody></table>
+<p class="note">The PDF lists the seven names. The second column is the usual meaning of each name, not a sentence copied from the notes.</p>
+<p><code>venv</code> is a module that ships with Python. It creates a directory with its own interpreter and its own installed libraries, so one project does not overwrite another's packages. Creating and using one is covered with the rest of the language in the <a href="python.html">Python notes</a>.</p>
+<div class="callout"><strong><code>uv</code> is a Python tool, not a manager for every package on the machine.</strong> The notes call pip the old package manager and uv the new manager “for all packages.” Pip is still the installer that comes with Python. uv, from Astral, is a newer installer and project manager for Python: it can install libraries, lock them, and install Python itself. It does not replace apt, npm, or the system package manager.</div>
+
+<h2 id="agile">2. Agile and DevOps</h2>
+<p>Agile, in the notes, is iterative delivery, collaboration, customer feedback and room to change the plan. A sprint is the short cycle. The notes put it at one to four weeks. DevOps is the name they give the bridge from writing the code to running it: automate the build, the test, the deploy and the monitor. Their line is that Agile sets the rhythm and DevOps supplies the speed.</p>
+<table><thead><tr><th>Idea</th><th>In the notes</th><th>How they tie it to DevOps</th></tr></thead><tbody>
+<tr><td>Sprint</td><td>A short cycle that ships a small usable slice.</td><td>Plan the automation and the pipeline for that slice.</td></tr>
+<tr><td>Scrum</td><td>Sprints, a daily stand-up, a review and a retrospective.</td><td>Line deploys and test environments up with the sprint.</td></tr>
+<tr><td>Kanban</td><td>A board: to do, in progress, done.</td><td>The same shape shows up on a pipeline or an issue tracker.</td></tr>
+<tr><td>User story</td><td>One piece of behaviour, written from the user's side.</td><td>The story can name the environment or the automation that feature needs.</td></tr>
+<tr><td>Backlog</td><td>The ordered list of work not started.</td><td>Infrastructure and automation tasks live there too.</td></tr>
+<tr><td>Stand-up</td><td>About fifteen minutes on progress and blockers.</td><td>Builds, deploys and automation health belong in that update.</td></tr>
+<tr><td>Velocity</td><td>How much work a sprint finished.</td><td>A rough cap on how much infrastructure work the next sprint can take.</td></tr>
+</tbody></table>
+<p>The notes' four pillars are continuous feedback through monitoring, iterative delivery through a CI/CD pipeline, collaboration in shared tools, and adaptability through infrastructure as code. The tools they name are Jira, Jenkins and GitHub Actions. GitHub Actions is written up in the <a href="git-github-actions.html">Git and GitHub Actions notes</a>.</p>
+<p>The tools they put next to a REST API are Postman and curl for calling endpoints, NGINX and Apache in front of the API, Docker and Kubernetes for containers, and Jenkins, GitHub Actions or GitLab CI for the pipeline. Docker runs a container. Kubernetes is the orchestrator that schedules many of them. That split is the subject of the <a href="docker.html">Docker notes</a>. curl's name is short for “client URL.”</p>
+
+<h2 id="http">3. Routes, URLs and status codes</h2>
+<p>In these notes an API is the set of routes the backend exposes over HTTP: a method, a URL and the function that runs. A route is that pair. Their example is <code>GET /health</code> calling <code>health_check()</code>, the path a load balancer or a monitor hits.</p>
+<p>The URL figure splits an address into the usual parts:</p>
+<div class="diagram"><strong>URL anatomy, the shape of the figure</strong>
+<div class="flow"><span class="node">scheme</span><span class="arrow">→</span><span class="node">host</span><span class="arrow">→</span><span class="node">port</span><span class="arrow">→</span><span class="node">path</span><span class="arrow">→</span><span class="node">query</span><span class="arrow">→</span><span class="node">fragment</span></div>
+<p class="note">https://api.example.com:443/users/123?active=true#profile</p>
+</div>
+<table><thead><tr><th>Request</th><th>Response</th></tr></thead><tbody>
+<tr><td>Method, path, headers, and a body when the method carries one.</td><td>Status code, headers, and a body.</td></tr>
+</tbody></table>
+<h3>CRUD and the method contract</h3>
+<table><thead><tr><th>Method</th><th>Notes' example</th><th>Contract worth keeping</th></tr></thead><tbody>
+<tr><td><code>GET</code></td><td>Read <code>/api/users</code>. Parameters sit in the URL. The notes say it has no side effects and can be cached.</td><td>Safe and idempotent. Repeating it does not change the resource. Caches are allowed to store it.</td></tr>
+<tr><td><code>POST</code></td><td>Create <code>/api/users</code>. The body is JSON.</td><td>Not idempotent. Two identical calls can create two users.</td></tr>
+<tr><td><code>PUT</code></td><td>Update <code>/api/users/123</code>.</td><td>The notes say “update existing data.” A <code>PUT</code> replaces the representation. Sending the same body again leaves the resource in the same state, so it is idempotent.</td></tr>
+<tr><td><code>PATCH</code></td><td>Partial update of <code>/api/users/123</code>.</td><td>Only the fields you send change. A second call is not guaranteed to be a no-op unless the patch itself is written that way.</td></tr>
+<tr><td><code>DELETE</code></td><td>Remove <code>/api/users/123</code>.</td><td>Idempotent. Deleting a resource that is already gone is still “gone.”</td></tr>
+</tbody></table>
+<div class="callout"><strong>The POST line in the notes is a double negative.</strong> It says calling twice “≠ not same result.” Read it as: calling <code>POST</code> twice does not have to produce the same result. That is what “not idempotent” means.</div>
+<h3>Status codes in the notes</h3>
+<table><thead><tr><th>Code</th><th>How the notes use it</th></tr></thead><tbody>
+<tr><td>200</td><td>OK. An empty list is a fair 200 for a search that matched nothing.</td></tr>
+<tr><td>201</td><td>Created. The resource now exists.</td></tr>
+<tr><td>400</td><td>Bad Request. The input is invalid.</td></tr>
+<tr><td>401</td><td>The notes gloss this as “no valid authentication.”</td></tr>
+<tr><td>404</td><td>Not Found. Prefer this when the client asked for one specific resource and it is missing.</td></tr>
+<tr><td>422</td><td>The notes call this a validation error. FastAPI returns it when the body or the parameters fail validation. The status means the server understood the syntax and still cannot carry out the instruction.</td></tr>
+<tr><td>500</td><td>Internal Server Error. The failure is on the server.</td></tr>
+</tbody></table>
+<div class="callout"><strong>401 is a missing or rejected credential. 403 is a refused permission.</strong> The status is named Unauthorized, which sounds like “you may not do this.” What it asks for is authentication: send a valid login, token or other credential. Once the server knows who you are and still refuses the action, the code is 403 Forbidden. The notes do not list 403. The two codes get mixed up constantly.</div>
+
+<h2 id="rest">4. REST constraints</h2>
+<p>REST is Representational State Transfer, an architectural style for networked applications. The notes describe it as the way web APIs talk over HTTP. HTTP is the protocol people usually use. The style is the set of constraints, not the protocol.</p>
+<table><thead><tr><th>Constraint</th><th>What the notes say</th></tr></thead><tbody>
+<tr><td>Client–server</td><td>The interface and the data store are separate. A mobile app can call an API hosted on AWS.</td></tr>
+<tr><td>Stateless</td><td>The server does not remember the client between requests. Each request carries its own authentication, and the notes' example is a JWT.</td></tr>
+<tr><td>Cacheable</td><td>A response may be stored and reused. The header they name is <code>Cache-Control</code>.</td></tr>
+<tr><td>Uniform interface</td><td>Resources are named in a standard way. <code>/users/123</code> is user 123.</td></tr>
+<tr><td>Layered system</td><td>The client need not know it is talking to a gateway. Their example is NGINX in front of the app. Reverse proxies are also in the <a href="cn.html">networking notes</a>.</td></tr>
+<tr><td>Code on demand</td><td>The server can send code for the client to run. The notes say this is usually avoided.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Stateless does not mean the database forgets the user.</strong> The server stores resources. What it must not store, between requests, is client session state. A JWT is one way to carry identity in the request itself. A session id that only works because the server kept a session object is the stateful pattern. Code on demand is the optional constraint. The other five are the ones a REST API is expected to keep. A uniform interface is also more than a URL shape: the message identifies the resource, the representation is what the client sends and receives, and the message says how to process it.</div>
+
+<h2 id="fastapi">5. JSON, FastAPI and the ASGI server</h2>
+<p>JSON is a language-independent text format for structured data. The notes say “independent-language,” which is that idea. FastAPI turns Python objects into a JSON response and turns a JSON body back into Python objects. Their payload is:</p>
+<pre><code>{
+  "ID": 123,
+  "Name": "Mube",
+  "role": "Engineer"
+}</code></pre>
+<p>The reasons the notes give for FastAPI are speed of building the API, interactive docs from Swagger UI, validation without a hand-written checker, and async handlers. Validation here checks types and shape at the edge of the API. It does not replace the parameterized queries in the next database chapter. When validation fails, FastAPI responds with 422.</p>
+<p>Uvicorn is the ASGI server the notes name. ASGI is the Asynchronous Server Gateway Interface, the async successor to WSGI. A WSGI app is a synchronous callable. ASGI can hold a connection open, which is what WebSockets need, and it can await network calls instead of blocking a worker.</p>
+<div class="callout"><strong>Gunicorn manages processes. Uvicorn workers run the app.</strong> The notes compress this to “Gunicorn → Uvicorn update: Manager, handles I/O, process management.” Gunicorn is the process manager: it starts workers, restarts them and listens for shutdown. Each worker is a Uvicorn worker that speaks ASGI to FastAPI. The current Uvicorn deployment guide says the old <code>uvicorn.workers</code> worker class is deprecated, and the replacement package is <code>uvicorn-worker</code>. For local work the notes' path is still Uvicorn itself. The Gunicorn page linked from the PDF now 404s. The current deploy guide is the one in the references.</div>
+
+<h2 id="lists">6. Filtering, sorting, pagination and decoupling</h2>
+<p>List endpoints take the extra choices as query parameters, so the path stays stable. The notes' three are a field filter such as <code>category=electronics</code>, a sort such as <code>sort-by</code> with <code>sort-order=desc</code>, and a page such as <code>page=2</code> with <code>size=20</code>. In FastAPI a simple function parameter that is not part of the path becomes a query parameter. An optional one is the notes' <code>Optional[...]</code>.</p>
+<p>They want the filter, the sort and the page applied in the database, not after the application has loaded every row. That is what keeps memory down. The offset formula they give is:</p>
+<pre><code>offset = (page - 1) × limit</code></pre>
+<p><code>limit</code> is how many rows to return. <code>offset</code> is how many to skip. Page 1 starts at 0. Page 2 with a size of 20 starts at 20.</p>
+<div class="callout"><strong>The formula is right, and a large offset is still expensive.</strong> The database often still walks the skipped rows. A maximum page size caps how much one response holds. It does not make “page 5000” cheap. The notes' SQL reference, <a href="https://use-the-index-luke.com/no-offset" target="_blank" rel="noopener">Use The Index, Luke</a>, is about that cost and about paging with a key instead of an offset.</div>
+<p>The notes also contrast a dynamic query, which fetches one row by something like a serial number, with a static query, which orders or searches by a fixed field such as type. That pair is about which rows you want. “Dynamic SQL” in the next chapter is a different phrase: it means the statement text is assembled in code.</p>
+<p>Decoupling, here, means the handler turns a database row into the dictionary the API promised. The frontend depends on that contract. You can change the table without changing the client, as long as the JSON stays the same. Sending the row through unchanged leaks the table's column names into the API.</p>
+
+<h2 id="sql">7. SQL safety and where NoSQL fits</h2>
+<p>The rule in the notes is absolute: do not paste user input into the SQL text. Pass it as a bound parameter. A dynamic statement, one the code builds up for optional filters, still binds every value. The notes record a real mismatch: the number and the order of placeholders have to match the parameter list, or the driver raises an error. The <a href="sql.html">SQL notes</a> cover the language itself.</p>
+<pre><code># The value is data. It is not part of the statement text.
+cursor.execute(
+    "SELECT id, name FROM users WHERE name = %s",
+    (name,),
+)</code></pre>
+<div class="callout"><strong>A placeholder cannot stand in for a column or an <code>ORDER BY</code>.</strong> Parameters bind values. <code>sort_by=name</code> has to become a column name in the SQL text, and a client-supplied column name is an injection point if you concatenate it. The notes' fix is a whitelist. A set answers “is this allowed?” A dict answers that and maps the public name onto the real column, which is useful when the API name and the column name differ.</div>
+<pre><code>columns = {"name": "name", "created": "created_at"}
+order = columns.get(sort_by)
+if order is None:
+    # reject the request; do not build the ORDER BY
+    ...</code></pre>
+<p>Every public limit needs a ceiling. The notes give three reasons: memory, a large scan, and a denial of service from a client that asks for everything. Close the database connection when the request is done, so you do not leak connections, hold locks, or exhaust the server. A pool is the usual form of that rule: the request returns the connection to the pool instead of opening a new one every time.</p>
+<p>NoSQL, in the notes, fits high scale, a schema that changes, event data, caching, and access patterns you can predict, when those matter more than joins and ad hoc queries. It is not a faster replacement for every relational table.</p>
+
+<h2 id="frontend">8. HTML, HTMX, React and WebSockets</h2>
+<table><thead><tr><th>Approach</th><th>Who builds the page</th></tr></thead><tbody>
+<tr><td>Jinja2</td><td>The server fills a template and sends HTML. That is server-side rendering.</td></tr>
+<tr><td>HTMX</td><td>The browser asks the server for a fragment and swaps that fragment into the page.</td></tr>
+<tr><td>React</td><td>JavaScript in the browser builds the interface from JSON. That is client-side rendering.</td></tr>
+</tbody></table>
+<div class="callout"><strong>HTMX is a JavaScript library.</strong> The notes say it updates part of the page “without JS.” You do not write the client script. The library, which is JavaScript, sends the request and swaps the HTML the server returns.</div>
+<p>A WebSocket stays open. Either side can send a message when an event happens, so the browser does not have to poll. The notes' uses are chat and games. The arrow in the PDF, both directions, is that difference from one HTTP request waiting for one response.</p>
+
+<h2 id="llm">9. Roles, sampling and training</h2>
+<table><thead><tr><th>Role</th><th>In the notes</th><th>The usual meaning</th></tr></thead><tbody>
+<tr><td>System</td><td>How the model should behave.</td><td>Instructions that sit above the conversation: tone, rules, the task.</td></tr>
+<tr><td>User</td><td>The user prompt.</td><td>What the person sent.</td></tr>
+<tr><td>Assistant</td><td>“Previous chat data.”</td><td>The model's own earlier replies. The user's earlier turns stay on the user role. Together, those messages are the chat log the notes say you can hand to a library such as LangChain on the next call.</td></tr>
+</tbody></table>
+<p>Temperature, in the notes, runs from 0, “no creative,” to 2, “high creative.” On OpenAI's API that range is real: higher temperature flattens the distribution, so less likely tokens get picked more often. Lower temperature concentrates on the likely tokens. It does not make a wrong answer correct. It makes the likely continuation more repeatable. Some models, including some reasoning models, do not accept a custom temperature at all.</p>
+<div class="callout"><strong>Top-p is not a confidence score.</strong> The notes gloss top-p as “how confident the choice must be,” with 90% as the example. Nucleus sampling keeps the smallest set of tokens whose probabilities add up to p, then samples inside that set. Top-k is the other knob they name: keep only the k most likely tokens. OpenAI exposes temperature and top-p, and recommends changing one of them, not both. Top-k is a common setting on other runtimes. It is not an OpenAI chat parameter.</div>
+<table><thead><tr><th>Approach</th><th>What changes</th><th>The notes' tradeoff</th></tr></thead><tbody>
+<tr><td>Prompt engineering</td><td>Instructions and small documents go in the prompt. The weights stay as they are.</td><td>Easy to try. You pay the context on every call, and the window is finite. Fits small documents and experiments.</td></tr>
+<tr><td>Long context</td><td>The model reads a large document directly. No vector database.</td><td>Better chance of seeing the whole document. Slower, more expensive, and still bounded by the window. Fits reports, books and papers.</td></tr>
+<tr><td>Fine-tuning with LoRA, QLoRA or Unsloth</td><td>Training examples teach a style or a format.</td><td>Fast at response time, consistent voice, structured output. When the facts change you retrain, and you need data and a GPU. The notes' uses are a company voice and structured output.</td></tr>
+<tr><td>Continued pretraining</td><td>More training on domain text, on top of an existing model.</td><td>Deeper grasp of the field's language. Expensive, and it wants a large domain corpus. The notes name medicine, law, science and finance.</td></tr>
+<tr><td>Full pretraining</td><td>Train on a massive corpus so the knowledge is in the weights.</td><td>The strongest general model, and the least practical for a product team. This is how foundation models are made.</td></tr>
+</tbody></table>
+<p class="note">LoRA does not rewrite every weight. It trains small adapter matrices and leaves the base model frozen. QLoRA does that on a quantized base model, so the frozen weights take less memory. Unsloth is a library that trains those adapters faster. The notes are right that the behaviour changes and that new facts still require another training run. They are not baked in the way a pretraining corpus is.</p>
+
+<h2 id="rag">10. Retrieval and knowledge graphs</h2>
+<p>RAG is how the notes answer from documents that change, without another training run. The flowchart in the PDF is the usual pipeline:</p>
+<div class="diagram"><strong>Vector RAG, the flow the figure describes</strong>
+<div class="flow"><span class="node">Chunk the documents</span><span class="arrow">→</span><span class="node">Embed</span><span class="arrow">→</span><span class="node">Vector store</span></div>
+<div class="flow"><span class="node">Embed the question</span><span class="arrow">→</span><span class="node">Nearest chunks</span><span class="arrow">→</span><span class="node">Prompt the model</span><span class="arrow">→</span><span class="node">Answer</span></div>
+</div>
+<p>Their example is the question “How many vacation days do employees get?” The chunk that answers it says “20 annual leave.” A vector search can match vacation to annual leave. A keyword search for “vacation” misses that page.</p>
+<table><thead><tr><th>Method</th><th>How it finds text</th><th>Tradeoff in the notes</th></tr></thead><tbody>
+<tr><td>Vector RAG</td><td>Chunks live in a vector database such as Chroma or FAISS. The closest chunks go into the prompt.</td><td>Documents can change without retraining. Cheap to start, and it scales to a large collection. If the retrieval misses, the answer is wrong, and the model does not keep the fact afterwards. Fits policies, manuals and PDFs.</td></tr>
+<tr><td>Vectorless RAG</td><td>Keywords, metadata, SQL, BM25, a file path, or reading a document directly.</td><td>No embedding model and no vector database. It misses a page that uses a different word. Fits a small collection, a structured table, an FAQ, or an exact term.</td></tr>
+<tr><td>Knowledge graph</td><td>Facts and relationships are edges. The model queries the graph.</td><td>Strong on connected facts. Harder to build and keep current than a chunk index. The notes name enterprise, medical and finance data.</td></tr>
+</tbody></table>
+
+<h2 id="agents">11. Agents, memory, MCP and browsers</h2>
+<p>Agentic AI, in the notes, means the model chooses tools before it answers: retrieval, an API, SQL, search, code. That can finish a task that needs several sources. It is also slower, more expensive and harder to operate. A chatbot answers. An agent is supposed to carry out the task. The loop they write is think, act, observe, repeat. LangGraph is the orchestration tool they name for a workflow that is more than one step.</p>
+<div class="diagram"><strong>The agent loop in the notes</strong>
+<div class="flow"><span class="node">Think</span><span class="arrow">→</span><span class="node">Act</span><span class="arrow">→</span><span class="node">Observe</span><span class="arrow">→</span><span class="node">Repeat</span></div>
+</div>
+<table><thead><tr><th>Memory</th><th>What the notes store there</th></tr></thead><tbody>
+<tr><td>Short-term</td><td>The current chat.</td></tr>
+<tr><td>Long-term</td><td>Information kept outside the model, so a later session can see it.</td></tr>
+<tr><td>Semantic</td><td>Facts.</td></tr>
+<tr><td>Episodic</td><td>Past events.</td></tr>
+<tr><td>Procedural</td><td>How to do a task.</td></tr>
+</tbody></table>
+<p>The tools they attach to that stack:</p>
+<table><thead><tr><th>Tool</th><th>Role the notes give it</th></tr></thead><tbody>
+<tr><td>Mem0</td><td>The notes say “short memory.” Mem0 is a memory layer that stores facts across sessions. That is long-term memory, not the current turn. The current turn is already in the message list.</td></tr>
+<tr><td>Zep</td><td>Chat memory.</td></tr>
+<tr><td>Chroma</td><td>A vector database the notes recommend for getting started.</td></tr>
+<tr><td>Qdrant</td><td>A vector database they mark for production.</td></tr>
+<tr><td>Weaviate</td><td>A vector database they mark for enterprise. All three store vectors. The split is how the notes would run them, not a rule that one of them cannot be deployed smaller or larger.</td></tr>
+</tbody></table>
+<p>MCP, the Model Context Protocol, is the notes' standard way for a model to call an external tool. Their analogy is USB for AI. FastMCP builds a server. The MCP SDK is the official library. Smithery is where they would look for a server someone else published. MCP Inspector debugs one.</p>
+<p>Browser and computer use is the model clicking, typing, scrolling and reading, the way a person would. Browser Use, Stagehand and Skyvern are agent layers. Playwright and Selenium are the browser drivers underneath that kind of tool. A coding agent, in the notes, reads, plans, edits, tests, fixes and repeats. The projects they name are OpenHands, Cline, Aider and Goose.</p>
+
+<h2 id="eval">12. Evaluation, observability and inference</h2>
+<p>Evaluation asks whether the answer is right. Observability asks why a particular request behaved the way it did. The metrics they list are latency, cost, tokens and success rate. The tools are Langfuse, Arize Phoenix, OpenTelemetry and Braintrust. OpenTelemetry is the general tracing standard. The other three are products aimed at LLM traces and evals, and they can export through that standard.</p>
+<p>Training is when the model learns. Inference is when it answers. A token is the small text unit the model reads and writes. Latency is how long the answer takes. Throughput is how many requests per second the server finishes. Quantization stores the weights in fewer bits, so the model is smaller and often faster, with some loss of quality.</p>
+<table><thead><tr><th>Engine</th><th>How the notes place it</th></tr></thead><tbody>
+<tr><td>vLLM</td><td>Production serving. Its own write-up of the design is PagedAttention, linked below.</td></tr>
+<tr><td>Ollama</td><td>Running a model on your own machine.</td></tr>
+<tr><td>llama.cpp</td><td>The notes say CPU inference. That is the case it is known for. The same project also has GPU builds.</td></tr>
+<tr><td>SGLang</td><td>Efficient serving.</td></tr>
+<tr><td>TensorRT-LLM</td><td>NVIDIA's optimized runtime.</td></tr>
+</tbody></table>
+
+<h2 id="references">13. References in the notes</h2>
+<h3>HTTP, REST and the database</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP" target="_blank" rel="noopener">MDN: HTTP</a>.</li>
+<li><a href="https://restfulapi.net/" target="_blank" rel="noopener">REST API Tutorial</a>, the design notes the PDF calls a RESTful API design guide. It is a third-party summary of the constraints, not the Fielding dissertation.</li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener">OWASP SQL Injection Prevention Cheat Sheet</a>.</li>
+<li><a href="https://use-the-index-luke.com/no-offset" target="_blank" rel="noopener">Use The Index, Luke: paging without a large offset</a>.</li>
+<li><a href="https://www.f5.com/company/blog/nginx/websocket-nginx" target="_blank" rel="noopener">NGINX as a WebSocket proxy</a>. The notes cite <code>nginx.com/blog/websocket-nginx/</code>. That path now redirects to an F5 product page. The article itself is the one linked here. The server manual for the same mechanism is <a href="https://nginx.org/en/docs/http/websocket.html" target="_blank" rel="noopener">WebSocket proxying</a> on nginx.org.</li>
+</ul>
+<h3>FastAPI and Python</h3>
+<ul>
+<li><a href="https://fastapi.tiangolo.com/tutorial/" target="_blank" rel="noopener">FastAPI tutorial</a>.</li>
+<li><a href="https://uvicorn.dev/" target="_blank" rel="noopener">Uvicorn</a>, and its <a href="https://uvicorn.dev/deployment/" target="_blank" rel="noopener">deployment</a> page. The notes cite <code>www.uvicorn.org</code>, which no longer resolves.</li>
+<li><a href="https://gunicorn.org/deploy/" target="_blank" rel="noopener">Deploying Gunicorn</a>. The notes cite <code>docs.gunicorn.org/en/stable/deploy.html</code>, which returns 404.</li>
+<li><a href="https://astral.sh/blog/uv" target="_blank" rel="noopener">uv</a>, Astral's announcement of the Python package and project manager.</li>
+<li><a href="https://testdriven.io/blog/topics/fastapi/" target="_blank" rel="noopener">TestDriven.io on FastAPI</a>.</li>
+</ul>
+<h3>Models, retrieval, agents</h3>
+<ul>
+<li><a href="https://developers.openai.com/api/docs/guides/text" target="_blank" rel="noopener">OpenAI text generation</a>. The notes cite <code>platform.openai.com/docs/guides/text-generation</code> for roles, temperature and top-p. That path now opens this guide.</li>
+<li><a href="https://unsloth.ai/docs" target="_blank" rel="noopener">Unsloth</a>. The notes cite <code>docs.unsloth.ai</code>, which redirects here.</li>
+<li><a href="https://vllm.ai/blog" target="_blank" rel="noopener">vLLM blog</a>. The notes cite <code>blog.vllm.ai</code>, which now lives here.</li>
+<li><a href="https://huggingface.co/blog" target="_blank" rel="noopener">Hugging Face blog</a>.</li>
+<li><a href="https://www.langchain.com/blog" target="_blank" rel="noopener">LangChain blog</a>. The notes cite <code>blog.langchain.dev</code>, which redirects here.</li>
+<li><a href="https://www.pinecone.io/learn/retrieval-augmented-generation/" target="_blank" rel="noopener">Pinecone: retrieval-augmented generation</a>.</li>
+<li><a href="https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro" target="_blank" rel="noopener">Model Context Protocol</a>. The notes cite the site root, which now opens this introduction.</li>
+<li><a href="https://www.anthropic.com/engineering" target="_blank" rel="noopener">Anthropic engineering</a>. The notes point here for the essay on building agents. The index is broader than that one essay.</li>
+<li><a href="https://langfuse.com/blog" target="_blank" rel="noopener">Langfuse blog</a>.</li>
+</ul>
+<p class="note">Original material: Backend &amp; AI notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
