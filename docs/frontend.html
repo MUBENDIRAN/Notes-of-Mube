@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Frontend web development notes by Mubendiran K: HTML, CSS, the box model, and the JavaScript DOM.">
+<title>Frontend Web Development | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Frontend</div>
+<h1>Frontend Web Development</h1>
+<p class="sub">A structured, readable version of my frontend notes. This article follows the four modules in the original 13-page notes: HTML, CSS, the DOM, and the reading list.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 13-page source notes · <a href="https://drive.google.com/file/d/1_HgWaX-LZOIQYq82oUuPA_gM5gGdlH_d/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2403992?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#html">1. HTML concepts</a><a href="#tags">2. Tags and layout</a><a href="#css">3. Writing CSS</a><a href="#box">4. Box model and units</a><a href="#cascade">5. Specificity and layout</a><a href="#dom">6. The DOM</a><a href="#events">7. Events, forms and fetch</a><a href="#references">8. References</a>
+</div></nav>
+<article>
+
+<h2 id="html">1. HTML concepts and the boilerplate</h2>
+<p>HTML is Hypertext Markup Language, the language that structures a page. The notes separate it from Markdown, and they separate a raw element from a component.</p>
+<div class="callout"><strong>Markdown is a markup language.</strong> The notes set “markup languages” against Markdown, as if Markdown were something else. Markdown is a lightweight markup language. You write <code>#</code> and <code>*</code> in plain text, and a tool turns those symbols into HTML tags. HTML is the markup the browser actually builds the page from. The contrast that matters is weight: HTML spells the tags out, Markdown keeps the source short.</div>
+<table><thead><tr><th></th><th>In the notes</th></tr></thead><tbody>
+<tr><td>Element</td><td>One HTML building block, such as a heading or a button: the tags plus what they contain.</td></tr>
+<tr><td>Component</td><td>A reusable piece of interface, such as a React profile card, built from several elements and some behaviour. Components are the unit in the <a href="js-ts-express.html#frameworks">JavaScript and Express notes</a> once the page moves into a framework.</td></tr>
+<tr><td>UTF-8</td><td>Unicode Transformation Format, 8-bit. The encoding that lets letters, symbols and other writing systems survive the trip to the browser. The <code>charset</code> meta tag declares it. A <code>Content-Type</code> header from the server overrides that tag, so the file, the tag and the header need to agree.</td></tr>
+<tr><td>ARIA</td><td>Accessible Rich Internet Applications. Attributes that tell assistive technology, such as a screen reader, what a custom widget is and how it behaves. A native element already carries that meaning. A <code>button</code> does not need <code>role="button"</code>. Add ARIA when the native element cannot say what you mean.</td></tr>
+</tbody></table>
+<p>Every HTML5 page in the notes starts from this boilerplate. <code>lang</code> tells the browser the language. The viewport meta stops a phone from laying the page out as a narrow desktop and then zooming out.</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;My Web Page&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Main Heading&lt;/h1&gt;
+    &lt;p&gt;This is a paragraph inside the body.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p class="note"><code>&lt;!DOCTYPE html&gt;</code> is a declaration, not an element. It tells the browser to use the HTML5 parsing rules. The notes list it in the tag table. The browser records it as the document type, beside <code>html</code>, <code>head</code> and <code>body</code>, and it does not create an element you can style.</p>
+
+<h2 id="tags">2. Tags and page structure</h2>
+<table><thead><tr><th>Tags</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>html</code>, <code>head</code>, <code>body</code></td><td>The root, the metadata, and the visible page.</td></tr>
+<tr><td><code>h1</code> to <code>h6</code></td><td>Headings from most important to least. They describe the outline. They are not a font-size menu. Skipping from <code>h1</code> to <code>h4</code> because it looks smaller is what CSS is for.</td></tr>
+<tr><td><code>p</code>, <code>span</code>, <code>div</code></td><td>A paragraph, an inline wrapper, and a generic block. <code>span</code> sits in the line. <code>div</code> starts a new block.</td></tr>
+<tr><td><code>a</code></td><td>A link. <code>href</code> is the destination, another page or a section on this one.</td></tr>
+<tr><td><code>img</code></td><td>An image. <code>alt</code> is the replacement text when the image is not seen. It is not a tooltip. A decorative image gets an empty <code>alt</code>, so a screen reader skips it.</td></tr>
+<tr><td><code>ul</code>, <code>ol</code>, <code>li</code></td><td>A bulleted list, a numbered list, and one item.</td></tr>
+<tr><td><code>form</code>, <code>input</code>, <code>button</code></td><td>A form, a control, and a button. Inside a form, a <code>button</code> with no <code>type</code> submits. Use <code>type="button"</code> when the click should not send the form.</td></tr>
+<tr><td><code>header</code>, <code>nav</code>, <code>main</code>, <code>footer</code></td><td>Semantic regions: the banner, the navigation, the unique content of the page, and the close. The names do not, by themselves, put the banner at the top or the close at the bottom. CSS does the placement.</td></tr>
+</tbody></table>
+<p>The layout section names the pieces a reader sees, on top of those tags. A menu, a title, a card, and a favicon, which is the small icon on the browser tab. The header or navbar holds the logo, the main links and a search field. The footer holds the copyright, a sitemap and social links. A sidebar is the vertical panel for a second menu or for filters. Breadcrumbs are the trail of where you are: Home, then Courses, then Web Dev.</p>
+<div class="diagram"><strong>Figure 1, the page regions in the notes</strong>
+<div class="flow"><span class="node">Header / navbar</span></div>
+<div class="flow"><span class="node">Sidebar</span><span class="node">Main</span></div>
+<div class="flow"><span class="node">Footer</span></div>
+</div>
+
+<h2 id="css">3. Three ways to write CSS, and Bootstrap</h2>
+<p>CSS, Cascading Style Sheets, is the presentation. The notes give three places to put it.</p>
+<table><thead><tr><th>Kind</th><th>Where it lives</th></tr></thead><tbody>
+<tr><td>Inline</td><td>On the element, in a <code>style</code> attribute. The notes' paragraph is blue at 18px.</td></tr>
+<tr><td>Internal</td><td>A <code>style</code> element in <code>head</code>. The same rule, written once, applies to every <code>p</code> on that page.</td></tr>
+<tr><td>External</td><td>A separate <code>.css</code> file, linked from the document. One file can style many pages.</td></tr>
+</tbody></table>
+<pre><code>&lt;p style="color: blue; font-size: 18px;"&gt;This is blue.&lt;/p&gt;
+
+&lt;style&gt;
+    p { color: blue; font-size: 18px; }
+&lt;/style&gt;</code></pre>
+<p>Bootstrap is the notes' example of an external stylesheet you did not write. It is an open-source set of classes for buttons, grids and navbars. It started at Twitter and is now its own project. You link the file from a CDN, which is the external method above, and use the class names instead of starting from an empty file.</p>
+
+<h2 id="box">4. The box model and units</h2>
+<p>Every element is a rectangle. From the inside out, the notes' four layers are the content, the padding, the border and the margin. Padding is inside the border. Margin is outside it, and it pushes neighbouring elements away. Adjacent vertical margins can collapse into one gap. The notes do not mention that collapse. It is why two stacked paragraphs sometimes have less space between them than the sum of their margins.</p>
+<div class="diagram"><strong>Figure 2, the box from the inside out</strong>
+<div class="flow"><span class="node">Content</span><span class="arrow">→</span><span class="node">Padding</span><span class="arrow">→</span><span class="node">Border</span><span class="arrow">→</span><span class="node">Margin</span></div>
+</div>
+<div class="callout"><strong>The default width is the content only.</strong> With <code>box-sizing: content-box</code>, a <code>width</code> of 100px plus 10px of padding on each side plus a 2px border on each side is 124px on the page. <code>box-sizing: border-box</code> puts the padding and the border inside the 100px. The notes name the four layers. They do not say which of them <code>width</code> includes. That choice is why a “100px” box overflows its column.</div>
+<h3>Units</h3>
+<table><thead><tr><th>Unit</th><th>What the notes say</th><th>The part that is easy to miss</th></tr></thead><tbody>
+<tr><td><code>px</code></td><td>A fixed size.</td><td>A CSS pixel is the unit the layout uses. On a high-density screen it is not always one physical dot. Browser zoom scales <code>px</code> and <code>rem</code> together. The case where they diverge is the next row.</td></tr>
+<tr><td><code>%</code></td><td>Relative to the parent. Used for widths, heights and sometimes fonts.</td><td>A percentage height needs a parent with a specified height. If the parent's height is <code>auto</code>, a percentage height does not resolve to a fraction of the screen.</td></tr>
+<tr><td><code>em</code></td><td>Relative to the parent's font size.</td><td>That is true for <code>font-size</code>. For padding, margin and width, <code>em</code> uses the element's own computed font size. A child at <code>2em</code> whose parent is 16px is 32px. <code>padding: 1em</code> on that child is 32px, not 16px.</td></tr>
+<tr><td><code>rem</code></td><td>Relative to the root, the <code>html</code> element. The notes' default is 16px = 1rem.</td><td>If the reader sets the browser's default font size to 24px, 1rem becomes 24px and the page scales. A size in <code>px</code> does not follow that preference. That is the notes' reason to prefer <code>rem</code> for type.</td></tr>
+<tr><td><code>vw</code></td><td>1% of the viewport width.</td><td><code>100vw</code> includes the width of the scrollbar on many browsers, so a full-width bar can spill sideways by a few pixels.</td></tr>
+<tr><td><code>clamp()</code></td><td><code>clamp(minimum, preferred, maximum)</code>.</td><td>The preferred value is used only while it sits between the other two. The notes' padding is <code>clamp(12px, 2vw, 24px)</code>: at least 12px, growing with the viewport, and never past 24px.</td></tr>
+</tbody></table>
+
+<h2 id="cascade">5. Specificity, inheritance, flex and grid</h2>
+<p>When two rules want different values for the same property, specificity decides. The notes' order, from strongest to weakest, is an ID (<code>#message</code>), then a class, attribute or pseudo-class (<code>.warning</code>), then an element or pseudo-element (<code>p</code>, <code>h1</code>). One ID beats any number of classes. When the counts are equal, the rule that appears later wins.</p>
+<div class="callout"><strong>An inline style sits above that list.</strong> The notes start at the ID. A <code>style</code> attribute on the element beats an ID, a class and an element selector. <code>!important</code> sits above ordinary declarations from the same origin, which is why it is a poor way to “win”: the next override needs another <code>!important</code>. Neither the inline style nor <code>!important</code> is in the notes' three-step list.</div>
+<p>Some properties pass from parent to child. Layout properties do not. The notes' split:</p>
+<table><thead><tr><th>Inherited</th><th>Not inherited</th></tr></thead><tbody>
+<tr><td><code>color</code>, <code>font-family</code>, <code>font-size</code>, <code>line-height</code>, <code>text-align</code></td><td><code>margin</code>, <code>padding</code>, <code>border</code>, <code>width</code>, <code>height</code>, <code>background-color</code></td></tr>
+</tbody></table>
+<p>A child often looks as if it inherited the background. It did not. Its background is transparent, so the parent's paint shows through. Set <code>background-color</code> on the child and the parent's colour stops showing there.</p>
+<table><thead><tr><th></th><th>What it selects</th><th>Notes' examples</th></tr></thead><tbody>
+<tr><td>Pseudo-class, <code>:</code></td><td>An element in a state or a position.</td><td><code>:hover</code>, <code>:focus</code>, <code>:first-child</code></td></tr>
+<tr><td>Pseudo-element, <code>::</code></td><td>A part of an element, or a generated box.</td><td><code>::before</code>, <code>::after</code>, <code>::first-letter</code></td></tr>
+</tbody></table>
+<p class="note">Older CSS wrote <code>:before</code> and <code>:first-letter</code> with one colon. Browsers still accept that form for those old pseudo-elements. The double colon is how you tell a pseudo-element from a pseudo-class. <code>:first-child</code> stays a single colon. It is a pseudo-class.</p>
+<p>Flexbox, in the notes, arranges items along one axis: a row or a column. Grid arranges them in rows and columns at once. Flexbox can wrap onto extra lines, so the result can look like a grid. You still only choose one main axis. Grid lets you size both axes.</p>
+
+<h2 id="dom">6. The document object model</h2>
+<p>The notes read the three words this way. The document is the page the browser loaded. An object is an element represented so JavaScript can hold it. The model is the tree. Through that API, a script changes structure, style and text after the page has loaded.</p>
+<div class="diagram"><strong>Figure 3, the tree the browser builds</strong>
+<div class="flow"><span class="node">document</span><span class="arrow">→</span><span class="node">html</span><span class="arrow">→</span><span class="node">head</span></div>
+<div class="flow"><span class="node">html</span><span class="arrow">→</span><span class="node">body</span><span class="arrow">→</span><span class="node">h1, p, …</span></div>
+</div>
+<table><thead><tr><th>Method</th><th>What it returns</th></tr></thead><tbody>
+<tr><td><code>getElementById</code></td><td>The one element with that id, or <code>null</code>.</td></tr>
+<tr><td><code>querySelector</code></td><td>The first element that matches a CSS selector, or <code>null</code>.</td></tr>
+<tr><td><code>querySelectorAll</code></td><td>Every match, as a static list. No match is an empty list, not <code>null</code>. The list does not grow if you add elements later.</td></tr>
+<tr><td><code>getElementsByClassName</code></td><td>The elements with that class, as a live collection. It updates when the document changes. The notes list it next to <code>querySelectorAll</code>. Those two do not stay in step.</td></tr>
+</tbody></table>
+<pre><code>const soil = document.getElementById("soilMoisture");
+const card = document.querySelector(".sensor-card");</code></pre>
+<table><thead><tr><th>Property</th><th>What you read or write</th></tr></thead><tbody>
+<tr><td><code>textContent</code></td><td>The text, including text hidden with CSS. Setting it does not parse HTML. The notes' update is <code>soil.textContent = "35%";</code></td></tr>
+<tr><td><code>innerText</code></td><td>The rendered text. Hidden text is left out. Reading it can force the browser to compute layout.</td></tr>
+<tr><td><code>innerHTML</code></td><td>The markup as a string. Setting it parses HTML and replaces the children.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Untrusted text does not belong in <code>innerHTML</code>.</strong> The notes say to prefer <code>textContent</code> for ordinary text. <code>innerHTML</code> will treat a string as markup. If that string came from a user or from an API, a <code>&lt;script&gt;</code> or an event-handler attribute in it runs as the page. That is the cross-site scripting case they name. <code>textContent</code> inserts the characters and does not parse them.</div>
+<p>Style from script follows the same cascade as a stylesheet. <code>element.style</code> writes an inline declaration, which is the high-specificity form above. A class is easier to turn on and off, and it keeps the rule in the stylesheet:</p>
+<pre><code>soil.classList.add("status-required");
+soil.classList.remove("status-normal");</code></pre>
+<p><code>classList.toggle</code> adds the class when it is missing and removes it when it is present. <code>classList.contains</code> reports whether it is there.</p>
+
+<h2 id="events">7. Events, forms, fetch and when the script runs</h2>
+<table><thead><tr><th>Event</th><th>When it fires</th></tr></thead><tbody>
+<tr><td><code>click</code></td><td>The element was clicked. The notes log a message from the listener.</td></tr>
+<tr><td><code>input</code></td><td>The value changed, including each keystroke in a text field.</td></tr>
+<tr><td><code>change</code></td><td>The value was committed. For a text field that is usually when the field loses focus, not on every key. For a checkbox it is when the check changes.</td></tr>
+<tr><td><code>submit</code></td><td>The form was submitted.</td></tr>
+<tr><td><code>DOMContentLoaded</code></td><td>The HTML has been parsed. Images may still be loading.</td></tr>
+</tbody></table>
+<pre><code>button.addEventListener("click", function () {
+    console.log("Button clicked");
+});</code></pre>
+<p>On a form, <code>.value</code> is the text, <code>.checked</code> is a checkbox or radio, and <code>.disabled</code> turns a control off. <code>preventDefault</code> on <code>submit</code> stops the browser from navigating away and reloading. It does not save the data. If you still want it stored, the listener has to send it.</p>
+<pre><code>form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    const name = document.getElementById("greenhouseName").value;
+    console.log(name);
+});</code></pre>
+<h3>fetch</h3>
+<p>The notes use <code>fetch</code> to talk to a backend, and their example is a FastAPI server on <code>127.0.0.1:8000</code>. The same HTTP shape is in the <a href="backend-ai.html#http">backend notes</a>. <code>response.ok</code> is true for 200 through 299. A 404 still fulfills the promise, which is why the example checks <code>ok</code> and throws. That check is the point made in the <a href="js-ts-express.html#express">Express notes</a>. <code>response.json()</code> parses the body. <code>JSON.stringify</code> is the other direction: it turns a JavaScript value into JSON text for a request body. The example is a GET, so it parses a response and does not send one.</p>
+<pre><code>async function getSensors() {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/sensors");
+        if (!response.ok) {
+            throw new Error("Request failed");
+        }
+        const data = await response.json();
+        document.getElementById("soilMoisture").textContent =
+            data.soil_moisture + "%";
+    } catch (error) {
+        console.error(error);
+    }
+}</code></pre>
+<h3>When the script runs</h3>
+<p><code>defer</code> on an external script downloads it while the HTML parses, then runs it after the parse, in document order, before <code>DOMContentLoaded</code>. <code>async</code> is the attribute people swap in by mistake. An async script runs as soon as it downloads, which can be before the parser finishes, and several async scripts do not keep their order. The notes do not name <code>async</code>. They name <code>defer</code>.</p>
+<p>A selector returns <code>null</code> when the element is not in the tree yet. That happens when a script in <code>head</code> runs immediately and looks for a node that appears later in <code>body</code>. <code>defer</code>, or a listener for <code>DOMContentLoaded</code>, is how the notes wait.</p>
+<pre><code>&lt;script src="js/dashboard.js" defer&gt;&lt;/script&gt;</code></pre>
+
+<h2 id="references">8. References in the notes</h2>
+<h3>HTML</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Structuring_content" target="_blank" rel="noopener">MDN: structuring content</a>. The notes cite <code>/Learn/HTML/Introduction_to_HTML</code> and describe it as the HTML5 basics and the element reference. That path now opens this course. The element-by-element list is a different page, the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements" target="_blank" rel="noopener">HTML element reference</a>.</li>
+<li><a href="https://web.dev/learn/html" target="_blank" rel="noopener">web.dev: Learn HTML</a>. The notes point here for semantic markup, forms and ARIA.</li>
+<li><a href="https://www.w3schools.com/html/" target="_blank" rel="noopener">W3Schools HTML tutorial</a>.</li>
+</ul>
+<h3>CSS</h3>
+<ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Styling_basics" target="_blank" rel="noopener">MDN: styling basics</a>. The notes cite <code>/Learn/CSS/Building_blocks</code> for the box model, specificity, inheritance and units. That path now opens this module.</li>
+<li><a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" target="_blank" rel="noopener">A Complete Guide to Flexbox</a> on CSS-Tricks.</li>
+<li><a href="https://css-tricks.com/complete-guide-css-grid-layout/" target="_blank" rel="noopener">A Complete Guide to CSS Grid</a>. The notes cite <code>/snippets/css/complete-guide-grid/</code>. The guide now lives at this path.</li>
+<li><a href="https://web.dev/learn/css" target="_blank" rel="noopener">web.dev: Learn CSS</a>. The notes point here for fluid sizing, including <code>clamp</code>, and for pseudo-classes and pseudo-elements. Those are lessons inside the course, not a single clamp page.</li>
+</ul>
+<h3>The DOM</h3>
+<ul>
+<li><a href="https://javascript.info/document" target="_blank" rel="noopener">JavaScript.info: Document</a>. The notes point here for the tree, selectors and styles.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model" target="_blank" rel="noopener">MDN: the DOM</a>. The notes cite the <code>/Introduction</code> path. That path now opens this overview.</li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch" target="_blank" rel="noopener">MDN: Using the Fetch API</a>.</li>
+</ul>
+<p class="note">Original material: Frontend Web Development notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
