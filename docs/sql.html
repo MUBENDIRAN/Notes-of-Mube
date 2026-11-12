@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="SQL revision notes by Mubendiran K: data types, queries, joins, constraints, views, normalization, transactions and ACID.">
+<title>SQL Revision Notes | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Revision</div>
+<h1>SQL Revision Notes</h1>
+<p class="sub">A structured, readable version of my SQL learning and revision notes. This article follows the topics and statements in the original 5-page notes.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 5-page source notes · <a href="https://drive.google.com/file/d/1G1TynXI4qk7PmiUNqBy1VIOBsesb5gE6/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2402863?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#basics">1. SQL and data types</a><a href="#databases">2. Databases and tables</a><a href="#queries">3. Filtering and changes</a><a href="#functions">4. Aggregates, strings and dates</a><a href="#constraints">5. Constraints and indexes</a><a href="#joins">6. Joins and UNION</a><a href="#subqueries">7. Subqueries and views</a><a href="#design">8. Normalization and ACID</a><a href="#commands">9. Command types</a><a href="#references">10. References</a>
+</div></nav>
+<article>
+<p>SQL is the language used to define, change and read data in a relational database. These notes cover types, the core statements, filtering, joins, constraints, views, normalization and transactions. Most of the syntax is MySQL. PostgreSQL and SQL Server use the same ideas, and some of the function names differ.</p>
+
+<h2 id="basics">1. SQL, comments and data types</h2>
+<p>The notes expand SQL as Structured Query Language and pronounce it “sequel.” Both “sequel” and “S-Q-L” are used. Keywords are not case sensitive: <code>select</code> and <code>SELECT</code> are the same statement. Whether stored text matches in a case-sensitive way depends on the column's collation.</p>
+<div class="callout"><strong>SQL, the DBMS and the database are three different things.</strong> The notes chain them as SQL, then DBMS, then database. SQL is the language you write. A DBMS is the software that runs it, such as MySQL. A database is the collection of tables that software stores.</div>
+<pre><code>/* This comment
+   can span lines */
+-- This comment stays on one line</code></pre>
+<h3>Character types</h3>
+<table><thead><tr><th>Type in the notes</th><th>What it stores</th></tr></thead><tbody>
+<tr><td><code>CHAR(10)</code></td><td>A fixed length of 10 characters. Shorter values are padded.</td></tr>
+<tr><td><code>VARCHAR(10)</code></td><td>A variable length, up to 10 characters. It stores the characters you put in, plus a small length marker.</td></tr>
+<tr><td><code>TEXT</code></td><td>A long piece of character data. The notes describe this as saving the content as text.</td></tr>
+<tr><td><code>BLOB</code></td><td>A binary large object. The notes use it to store an image as bytes rather than as characters.</td></tr>
+</tbody></table>
+<h3>Character sets</h3>
+<p>These statements are MySQL. <code>SHOW CHARACTER SET;</code> lists the character sets the server knows. A column or a whole database can name one:</p>
+<pre><code>SHOW CHARACTER SET;
+
+CREATE DATABASE school CHARACTER SET utf8mb4;
+
+CREATE TABLE student (
+  name VARCHAR(10) CHARACTER SET utf8mb4
+);</code></pre>
+<p class="note">The original notes write <code>utf8</code>. In MySQL that name is the older 3-byte encoding. <code>utf8mb4</code> is the character set that stores the full Unicode range, including characters that need four bytes. Use <code>utf8mb4</code> for a new database.</p>
+
+<h2 id="databases">2. Databases and tables</h2>
+<table><thead><tr><th>Statement</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>DROP DATABASE name;</code></td><td>Deletes that database.</td></tr>
+<tr><td><code>DROP SCHEMA name;</code></td><td>Deletes a schema. In MySQL, schema and database are two names for the same thing, so this matches <code>DROP DATABASE</code>.</td></tr>
+<tr><td><code>USE name_db;</code></td><td>Selects the database the following statements apply to.</td></tr>
+<tr><td><code>SHOW TABLES;</code></td><td>Lists the tables in the current database.</td></tr>
+<tr><td><code>DROP TABLE name;</code></td><td>Deletes a table.</td></tr>
+</tbody></table>
+<div class="callout"><strong><code>DROP</code> removes the object.</strong> <code>DROP DATABASE</code> and <code>DROP TABLE</code> delete the definition and the rows. They do not ask for confirmation.</div>
+<p>The notes give the create-table line as <code>CREATE TABLE name (home datatype Primary Key (18))</code>. That mixes the table name, a column and a length. A table is the name, then a list of columns:</p>
+<pre><code>CREATE TABLE home (
+  id INT PRIMARY KEY,
+  city VARCHAR(18)
+);</code></pre>
+<p>Changing a table uses <code>ALTER TABLE</code>. The notes add a column, and drop one when that column should go.</p>
+<pre><code>ALTER TABLE home ADD pin VARCHAR(6);
+ALTER TABLE home DROP COLUMN pin;</code></pre>
+<p>The notes write <code>DROP (column)</code> for the second case. The working MySQL clause is <code>DROP COLUMN</code> followed by the column name.</p>
+<h3>Insert and read</h3>
+<pre><code>INSERT INTO home (id, city) VALUES (1, 'Chennai');
+
+SELECT * FROM student;</code></pre>
+<p>The notes write <code>INSERT INTO home(table)</code> and <code>SELECT (*) FROM Student</code>. The parentheses after <code>INSERT INTO</code> hold column names, not the word table. <code>SELECT *</code> has no parentheses around the star. <code>*</code> means every column.</p>
+
+<h2 id="queries">3. Filtering, update and sort</h2>
+<p><code>WHERE</code> keeps the rows that match a condition. The notes combine it with <code>AND</code>, <code>OR</code>, <code>IN</code>, <code>NOT IN</code> and <code>LIKE</code>.</p>
+<pre><code>SELECT name, city
+FROM student
+WHERE city = 'Chennai';
+
+SELECT name
+FROM student
+WHERE city IN ('Chennai', 'Delhi')
+  AND name LIKE 'A%';</code></pre>
+<p><code>LIKE 'A%'</code> matches a value that starts with A. <code>%</code> stands for any sequence of characters. The notes write the pattern as <code>'%...%'</code>, which matches the text in the middle of the value as well.</p>
+<p class="note"><code>NOT IN</code> does not behave as a simple “exclude this list” when the list contains <code>NULL</code>. A comparison with <code>NULL</code> is unknown, so the whole <code>NOT IN</code> filter can return no rows. Keep <code>NULL</code> out of that list, or use <code>NOT EXISTS</code>.</p>
+<h3>Update and delete</h3>
+<pre><code>UPDATE student
+SET name = 'Updated name'
+WHERE id = 1;
+
+DELETE FROM student
+WHERE id = 1;</code></pre>
+<p>The notes say delete is similar to update. Both need a <code>WHERE</code> clause unless you mean every row. An <code>UPDATE</code> or <code>DELETE</code> without <code>WHERE</code> changes or removes the whole table.</p>
+<h3>Distinct and order</h3>
+<table><thead><tr><th>Keyword</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>DISTINCT</code></td><td>Returns each value once. The notes call this the unique keyword.</td></tr>
+<tr><td><code>ORDER BY column ASC</code></td><td>Sorts ascending. This is the default when you omit <code>ASC</code>.</td></tr>
+<tr><td><code>ORDER BY column DESC</code></td><td>Sorts descending.</td></tr>
+</tbody></table>
+
+<h2 id="functions">4. Aggregates, strings, dates and groups</h2>
+<p>The notes group these as functions that do one specific job. The names below are the MySQL names from the notes.</p>
+<table><thead><tr><th>Function</th><th>Result in the notes</th></tr></thead><tbody>
+<tr><td><code>COUNT(*)</code></td><td>How many rows.</td></tr>
+<tr><td><code>AVG(score)</code></td><td>The average of a numeric column. The notes write <code>AVG(name)</code> as the shape of the call. An average needs numbers, not a name.</td></tr>
+<tr><td><code>SUM(score)</code></td><td>The total.</td></tr>
+<tr><td><code>MAX(score)</code></td><td>The largest value.</td></tr>
+<tr><td><code>MIN(score)</code></td><td>The smallest value.</td></tr>
+<tr><td><code>UCASE(name)</code></td><td>The value in upper case. <code>UPPER</code> is the same function.</td></tr>
+<tr><td><code>CHAR_LENGTH(name)</code></td><td>How many characters are in the value.</td></tr>
+<tr><td><code>CONCAT(first, ' ', last)</code></td><td>The pieces joined into one string.</td></tr>
+<tr><td><code>FORMAT(amount, 0)</code></td><td>The number rounded and shown with grouping separators. The notes give <code>1,00,000</code> as that kind of display. With no locale argument, MySQL uses <code>en_US</code>, so 100000 becomes <code>100,000</code>. A locale such as <code>en_IN</code> produces the Indian grouping from the notes.</td></tr>
+<tr><td><code>LEFT(name, 1)</code></td><td>The first characters. Here, the first character.</td></tr>
+</tbody></table>
+<h3>Dates</h3>
+<table><thead><tr><th>Type or function</th><th>What the notes say</th></tr></thead><tbody>
+<tr><td><code>DATE</code></td><td>A calendar date, written <code>YYYY-MM-DD</code>.</td></tr>
+<tr><td><code>DATETIME</code></td><td>A date and a time you set. The notes call this manual.</td></tr>
+<tr><td><code>TIMESTAMP</code></td><td>A date and a time the notes call automatic.</td></tr>
+<tr><td><code>NOW()</code></td><td>The current date and time.</td></tr>
+<tr><td><code>DATEDIFF(end_date, start_date)</code></td><td>The number of days between two dates, in MySQL.</td></tr>
+<tr><td><code>DATE_ADD(start_date, INTERVAL 1 DAY)</code></td><td>One day after that date. The notes also use an interval of 1 month.</td></tr>
+</tbody></table>
+<p class="note">Both <code>DATETIME</code> and <code>TIMESTAMP</code> store a date and a time. Automatic filling comes from a default such as <code>CURRENT_TIMESTAMP</code>. MySQL has often applied that default to <code>TIMESTAMP</code>, which is why the notes call it automatic. It is a property of the column definition, not of every <code>TIMESTAMP</code> value.</p>
+<pre><code>SELECT NOW();
+SELECT DATEDIFF('2026-11-12', '2026-11-01');
+SELECT DATE_ADD('2026-11-12', INTERVAL 1 MONTH);</code></pre>
+<h3>GROUP BY and HAVING</h3>
+<p><code>GROUP BY</code> folds rows that share a value, so an aggregate can be computed per group. <code>HAVING</code> filters those groups. <code>WHERE</code> filters rows before the grouping happens.</p>
+<pre><code>SELECT city, COUNT(*) AS students
+FROM student
+WHERE city IS NOT NULL
+GROUP BY city
+HAVING COUNT(*) &gt; 1;</code></pre>
+
+<h2 id="constraints">5. Constraints, keys and indexes</h2>
+<table><thead><tr><th>Constraint</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td><code>NOT NULL</code></td><td>The column must have a value. A null is rejected.</td></tr>
+<tr><td><code>DEFAULT</code></td><td>If an insert does not supply a value, this one is stored.</td></tr>
+<tr><td><code>UNIQUE</code></td><td>The notes say this ignores a duplicate. A unique column rejects the second insert. It does not skip it silently.</td></tr>
+<tr><td><code>AUTO_INCREMENT</code></td><td>MySQL fills 1, then 2, then 3 as rows are added, when you omit the value.</td></tr>
+<tr><td><code>PRIMARY KEY</code></td><td>The row's identity. It is unique and not null. The notes note that a unique index is created for it.</td></tr>
+<tr><td><code>FOREIGN KEY</code></td><td>A value in this table must match a primary key, or another unique key, in the referenced table. That is how the notes join two tables.</td></tr>
+</tbody></table>
+<pre><code>CREATE TABLE student (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(40) NOT NULL,
+  email VARCHAR(80) UNIQUE,
+  city VARCHAR(40) DEFAULT 'Chennai',
+  home_id INT,
+  FOREIGN KEY (home_id) REFERENCES home(id)
+);</code></pre>
+<p>An index is a structure the server uses to find rows without reading the whole table. The notes say a primary key and a foreign key act as an index, and a <code>UNIQUE</code> column is an index too. In MySQL that holds: the primary key is a unique index, a unique constraint creates an index, and InnoDB indexes the columns of a foreign key.</p>
+<p>The same page adds the cost. Indexes speed reads and slow writes, because each insert, update and delete also has to maintain those indexes.</p>
+<h3>ON DELETE</h3>
+<p>The notes use <code>ON DELETE</code> on a foreign key so that deleting a referenced row does not fail, or so the related rows are handled on purpose. Without an action, MySQL rejects the delete while child rows still point at that parent.</p>
+<table><thead><tr><th>Action</th><th>What happens to the child rows</th></tr></thead><tbody>
+<tr><td><code>ON DELETE RESTRICT</code></td><td>The delete is refused while child rows exist. This is the usual default.</td></tr>
+<tr><td><code>ON DELETE CASCADE</code></td><td>Child rows are deleted with the parent.</td></tr>
+<tr><td><code>ON DELETE SET NULL</code></td><td>The foreign key in the child is set to null. That column must allow null.</td></tr>
+</tbody></table>
+<p class="note">The action names are the practical forms of the notes' <code>ON DELETE</code> line. <code>CASCADE</code> deletes more than the one row you named. Use it only when those child rows should go too.</p>
+
+<h2 id="joins">6. Joins and UNION</h2>
+<p>A join reads two tables together by matching the foreign key to the referenced key. The notes describe three results.</p>
+<table><thead><tr><th>Join</th><th>What the notes keep</th></tr></thead><tbody>
+<tr><td><code>INNER JOIN</code>, also written <code>JOIN</code></td><td>Only the rows that match. Unmatched rows are left out. The notes call this the perfect join.</td></tr>
+<tr><td><code>LEFT JOIN</code></td><td>Every row from the left table. A left row with no match still appears, and the right-hand columns are null.</td></tr>
+<tr><td><code>RIGHT JOIN</code></td><td>Every row from the right table, with nulls on the left when there is no match.</td></tr>
+</tbody></table>
+<pre><code>SELECT student.name, home.city
+FROM student
+INNER JOIN home ON student.home_id = home.id;</code></pre>
+<p class="note">That query is an illustration of the notes' definition. The original pages do not include this statement.</p>
+<div class="diagram"><strong>Which rows survive</strong>
+<div class="flow"><span class="node">INNER JOIN<br>matches only</span><span class="node">LEFT JOIN<br>all of the left table</span><span class="node">RIGHT JOIN<br>all of the right table</span></div>
+</div>
+<p><code>UNION</code> stacks two results vertically. The notes require the same number of columns and compatible types. <code>UNION</code> removes duplicate rows. <code>UNION ALL</code> keeps them. <code>UNION ALL</code> is not in the original list.</p>
+<pre><code>SELECT city FROM home
+UNION
+SELECT city FROM campus;</code></pre>
+
+<h2 id="subqueries">7. Subqueries and views</h2>
+<p>A subquery is a query inside another query. The notes show this shape:</p>
+<pre><code>SELECT * FROM student
+WHERE name (SELECT name FROM student
+            WHERE name = '...');</code></pre>
+<p>That line is missing the comparison. The name has to be tested against the inner result with <code>IN</code> or <code>=</code>:</p>
+<pre><code>SELECT * FROM student
+WHERE name IN (
+  SELECT name FROM student
+  WHERE name = 'Ada'
+);</code></pre>
+<table><thead><tr><th>Keyword</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td><code>EXISTS</code></td><td>The outer query keeps a row when the subquery returns something. The notes say “non-null.” <code>EXISTS</code> checks that at least one row comes back. A row whose columns are null still counts as a row.</td></tr>
+<tr><td><code>ANY</code></td><td>The comparison succeeds if it is true for at least one value from the subquery.</td></tr>
+<tr><td><code>ALL</code></td><td>The comparison succeeds only if it is true for every value from the subquery.</td></tr>
+</tbody></table>
+<pre><code>SELECT * FROM home h
+WHERE EXISTS (
+  SELECT 1 FROM student s
+  WHERE s.home_id = h.id
+);
+
+SELECT * FROM result
+WHERE score &gt; ALL (
+  SELECT score FROM result WHERE subject = 'SQL'
+);</code></pre>
+<p class="note">The <code>EXISTS</code> and <code>ALL</code> statements are illustrations. They are not copied from the original notes. <code>&gt; ALL</code> means greater than every score in that subject. <code>&gt; ANY</code> would mean greater than at least one of them.</p>
+<h3>Views</h3>
+<p>A view stores a query under a name, so you can read that result without repeating the full statement. It is not a second copy of the table.</p>
+<pre><code>CREATE VIEW chennai_students AS
+SELECT name, city
+FROM student
+WHERE city = 'Chennai';
+
+CREATE OR REPLACE VIEW chennai_students AS
+SELECT name
+FROM student
+WHERE city = 'Chennai';</code></pre>
+<p><code>CREATE OR REPLACE VIEW</code> is the notes' way to change the query of a view that already exists.</p>
+
+<h2 id="design">8. Normalization, transactions and ACID</h2>
+<p>Normalization reduces repeated data. The notes stop at third normal form.</p>
+<table><thead><tr><th>Form</th><th>Rule in the notes</th></tr></thead><tbody>
+<tr><td>1NF</td><td>Each cell holds one value. A column of “111, 222” is two phone numbers and is not atomic.</td></tr>
+<tr><td>2NF</td><td>No partial dependency. With a primary key of more than one column, every other column must depend on the whole key, not on part of it.</td></tr>
+<tr><td>3NF</td><td>No transitive dependency. A column depends on the primary key, not on some other column that itself depends on the key.</td></tr>
+</tbody></table>
+<p>Second normal form only changes a table whose primary key is composite. A single-column key has no “part of the key” for a column to depend on. Third normal form is the case where, for example, a student row stores a college name and that college's city: the city depends on the college, and the college depends on the student. The city belongs with the college.</p>
+<h3>Transactions</h3>
+<p>A transaction is a group of changes that succeed or fail together. The notes name <code>COMMIT</code> and <code>ROLLBACK</code>. <code>COMMIT</code> makes the changes durable. <code>ROLLBACK</code> undoes the changes still open in that transaction.</p>
+<pre><code>START TRANSACTION;
+UPDATE student SET city = 'Delhi' WHERE id = 1;
+ROLLBACK;</code></pre>
+<p>The command-type list also includes <code>SAVEPOINT</code>, a named point you can roll back to without undoing the whole transaction:</p>
+<pre><code>SAVEPOINT before_update;
+UPDATE student SET city = 'Delhi' WHERE id = 1;
+ROLLBACK TO before_update;</code></pre>
+<h3>ACID</h3>
+<table><thead><tr><th>Property</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>Atomicity</td><td>All of the transaction is applied, or none of it is. The notes say “all or nothing.”</td></tr>
+<tr><td>Consistency</td><td>The database moves from one valid state to another. Constraints still hold when the transaction ends.</td></tr>
+<tr><td>Isolation</td><td>Concurrent transactions do not interfere with each other. This is the “no interference” idea in the notes.</td></tr>
+<tr><td>Durability</td><td>After a commit, the change remains even if the database process stops.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Isolation and durability are separate.</strong> The original notes attach “once done, follow values, no interference” to durability. No interference is isolation. Durability is the promise that a committed change is still there afterwards.</div>
+
+<h2 id="commands">9. Command types and running a database</h2>
+<table><thead><tr><th>Class</th><th>Statements in the notes</th></tr></thead><tbody>
+<tr><td>DDL, data definition</td><td><code>CREATE</code>, <code>ALTER</code>, <code>DROP</code>, <code>TRUNCATE</code></td></tr>
+<tr><td>DML, data manipulation</td><td><code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code></td></tr>
+<tr><td>DQL, data query</td><td><code>SELECT</code>, including <code>WHERE</code>, <code>GROUP BY</code> and <code>ORDER BY</code></td></tr>
+<tr><td>DCL, data control</td><td><code>GRANT</code>, <code>REVOKE</code></td></tr>
+<tr><td>TCL, transaction control</td><td><code>COMMIT</code>, <code>ROLLBACK</code>, <code>SAVEPOINT</code></td></tr>
+</tbody></table>
+<p><code>TRUNCATE TABLE student;</code> removes every row and is listed with the definition statements. <code>DELETE</code> can remove one row and is a manipulation statement. Some references treat <code>SELECT</code> as part of DML. These notes give it a separate query class, which is a useful way to remember it.</p>
+<pre><code>GRANT SELECT ON school.* TO 'reader'@'localhost';
+REVOKE SELECT ON school.* FROM 'reader'@'localhost';</code></pre>
+<p class="note">The grant and revoke lines are MySQL illustrations of the two DCL verbs. They are not in the original notes. Privileges are easy to make wider than you meant. Grant the smallest set the account needs.</p>
+<h3>What the notes list for DevOps</h3>
+<p>The last technical page names three operating topics and does not give commands for them.</p>
+<ul>
+<li><strong>Backup and restore.</strong> Take a copy of the database, and be able to load that copy back. In MySQL one common pair is <code>mysqldump</code> to write the backup and the <code>mysql</code> client to load it. The password should be prompted for, or read from a protected option file, not written into the command people share.</li>
+<li><strong>Tuning.</strong> The notes point at indexes, already covered above, and at connection pools. A pool is a set of open database connections the application reuses, instead of connecting again on every request.</li>
+<li><strong>How an application connects.</strong> The host, database name, user and password come from environment variables or a secret store. They do not belong in the source repository.</li>
+</ul>
+
+<h2 id="references">10. References in the notes</h2>
+<ul>
+<li><a href="https://dev.mysql.com/downloads/" target="_blank" rel="noopener">MySQL downloads</a>. The notes label this link “Download MySQL / Official SQL Server.” The page is MySQL, Oracle's community database. Microsoft SQL Server is a different product and is not what this URL serves.</li>
+<li><a href="https://dev.mysql.com/doc/refman/en/" target="_blank" rel="noopener">MySQL reference manual</a>, for the statements and functions used above.</li>
+<li><a href="https://www.geeksforgeeks.org/sql/sql-tutorial/" target="_blank" rel="noopener">GeeksforGeeks SQL tutorial</a>. The notes cite <code>/sql-tutorial/</code>. That path now redirects to <code>/sql/sql-tutorial/</code>.</li>
+</ul>
+<p class="note">Original material: SQL revision notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
