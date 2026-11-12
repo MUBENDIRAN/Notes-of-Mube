@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Operating system notes by Mubendiran K: processes, threads, memory, scheduling, synchronization and deadlock.">
+<title>Operating Systems | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Core principles</div>
+<h1>Operating Systems</h1>
+<p class="sub">A structured, readable version of my operating-system learning and revision notes. This article follows the topics in the original 4-page notes.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 4-page source notes · <a href="https://drive.google.com/file/d/1K8UAO7PAVMktD-PO7SYja4aRa1a9pNw-/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2403080?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#processes">1. Processes and threads</a><a href="#memory">2. Memory</a><a href="#scheduling">3. CPU scheduling</a><a href="#concurrency">4. Race conditions</a><a href="#sync">5. Semaphores and deadlock</a><a href="#references">6. References</a>
+</div></nav>
+<article>
+<p>An operating system shares the CPU, memory and other hardware among programs, and it keeps those programs from corrupting one another. These notes cover processes and threads, memory, the schedulers that choose who runs next, and the tools that keep shared data and shared resources from colliding.</p>
+
+<h2 id="processes">1. Processes, threads and system calls</h2>
+<table><thead><tr><th></th><th>What the notes say</th></tr></thead><tbody>
+<tr><td>Process</td><td>An independent execution with its own memory. A process has its own address space.</td></tr>
+<tr><td>Thread</td><td>A lightweight execution inside a process. Threads of one process share that process's memory. Each thread still has its own stack and registers, so they can run different functions at the same time.</td></tr>
+</tbody></table>
+<h3>Process states</h3>
+<p>The notes list five states in a line: New, Ready, Running, Waiting, Terminated. Those are the states. A process does not have to walk that line only from left to right.</p>
+<div class="diagram"><strong>How a process moves</strong>
+<div class="flow"><span class="node">New</span><span class="arrow">→</span><span class="node">Ready</span><span class="arrow">→</span><span class="node">Running</span><span class="arrow">→</span><span class="node">Terminated</span></div>
+<div class="flow"><span class="node">Running</span><span class="arrow">→</span><span class="node">Waiting</span><span class="arrow">→</span><span class="node">Ready</span></div>
+<p class="note">Running also returns to Ready when the scheduler takes the CPU away. Waiting is often called blocked.</p>
+</div>
+<ul>
+<li><strong>New:</strong> the process is being created.</li>
+<li><strong>Ready:</strong> it can run, and it is waiting for the CPU.</li>
+<li><strong>Running:</strong> it is on the CPU.</li>
+<li><strong>Waiting:</strong> it cannot run until an event arrives, such as disk or keyboard input.</li>
+<li><strong>Terminated:</strong> it has finished, or it was killed.</li>
+</ul>
+<h3>Context switching</h3>
+<p>The notes describe a context switch as the CPU moving from one process to another. The kernel saves the registers and program counter of the process that was running, and restores the next one. That cost is the price of multitasking: more than one program makes progress on one CPU. A switch between two threads of the same process is usually cheaper, because they already share an address space. A switch between processes also has to switch the memory map.</p>
+<h3>System calls</h3>
+<p>A system call is the interface a user program uses to ask the kernel to do something the program is not allowed to do itself. The notes give <code>fork()</code> and <code>exec()</code>, which are Unix calls. Opening a file or creating a process goes through this boundary. The program crosses from user mode into kernel mode and back.</p>
+<pre><code>pid = fork()
+# In the parent, pid is the new child's process id.
+# In the child, pid is 0.
+# fork() failed if pid is -1.
+
+exec()
+# Replaces the program running in this process.
+# The process id stays the same.</code></pre>
+<p><code>fork()</code> duplicates the calling process, which is the notes' definition. The two processes then diverge because the call returns a different value in each. <code>exec()</code> does not create a process. It loads a new program over the one that called it. A shell starts a command by forking, then the child calls <code>exec()</code>.</p>
+<p class="note">The return values are the usual Unix behaviour of <code>fork()</code>. The original notes name the call and say that it duplicates the caller. Windows does not use <code>fork()</code>. Its process and thread model is linked in the references.</p>
+
+<h2 id="memory">2. Memory management</h2>
+<h3>Paging</h3>
+<p>Paging divides memory into fixed-size blocks. A process is split into pages. Physical memory is split into frames of the same size. The notes' example is a 12 KB program and a 4 KB page, which is exactly 3 pages.</p>
+<div class="callout"><strong>That example wastes nothing because 12 divides by 4.</strong> The notes say paging avoids wasting memory. It avoids external fragmentation: free frames can be used even when they are not neighbours. A program that is not an exact multiple of the page size still leaves unused bytes in its last page. That leftover is internal fragmentation. A 13 KB program with 4 KB pages needs 4 pages.</div>
+<h3>Segmentation</h3>
+<p>Segmentation divides memory by meaning rather than by a fixed size: code, data and stack are typical segments. The notes connect this with modular programming, because a module can sit in its own segment. Segments have different lengths, so loading and unloading them can leave holes that are too small for the next segment. That external fragmentation is the problem paging was built to avoid.</p>
+<h3>Virtual memory</h3>
+<p>Virtual memory lets a process use addresses that are not all in RAM at once. Pages that are not resident sit on disk, in swap or a page file. The notes describe this as using disk as memory.</p>
+<div class="callout"><strong>A page fault is not only a full-RAM event.</strong> The notes say a page fault occurs when the data is not in RAM, and then “when RAM is full.” A fault happens whenever the CPU touches a virtual page that is not resident. The page may never have been loaded, or it may have been written out earlier. If RAM has a free frame, the kernel loads the page into it. If RAM is full, the kernel first chooses another page to evict, which may write that page to disk.</div>
+<div class="diagram"><strong>A page fault</strong>
+<div class="flow"><span class="node">CPU uses a virtual address</span><span class="arrow">→</span><span class="node">Page not in RAM</span><span class="arrow">→</span><span class="node">Load the page</span><span class="arrow">→</span><span class="node">Resume the process</span></div>
+</div>
+
+<h2 id="scheduling">3. CPU scheduling</h2>
+<p>The scheduler decides which ready process runs next. The notes ask for the trade-off between throughput, how much work finishes, and waiting time, how long a process sits in the ready queue. A policy that finishes short jobs quickly can leave a long job waiting. A policy that shares the CPU evenly spends time on context switches.</p>
+<table><thead><tr><th>Algorithm</th><th>Who runs next</th><th>Trade-off in the notes</th></tr></thead><tbody>
+<tr><td>FCFS</td><td>First come, first served. Processes run in arrival order, and each runs until it blocks or finishes.</td><td>The notes call it simple, but slow for long jobs. The delay actually hits the short jobs stuck behind a long one. That convoy effect raises their waiting time. The long job itself is not slowed once it has the CPU.</td></tr>
+<tr><td>SJF</td><td>Shortest job first. The ready process with the smallest CPU burst runs next.</td><td>The notes call it fast, and say long jobs can starve. Average waiting time is low when the burst times are known. A long job waits as long as shorter jobs keep arriving. The OS usually has to estimate the next burst. It cannot see the future.</td></tr>
+<tr><td>Round Robin</td><td>Each process gets the same time slice, then goes to the back of the ready queue.</td><td>Fair, and a good fit for time-sharing, which is the notes' judgement. A very large slice behaves like FCFS. A very small slice spends most of the time switching.</td></tr>
+<tr><td>Priority</td><td>The highest-priority ready process runs first.</td><td>The notes call it efficient, and say a low-priority task can starve. It is the right rule when some work must go first. Starvation is the cost. Aging raises the priority of a process that has waited, so a low-priority job eventually runs. Aging is not named in the original notes.</td></tr>
+<tr><td>Multilevel queue</td><td>Processes are grouped by type, such as system, user and batch. Each queue can have its own rule.</td><td>The notes say this is used in complex systems for better control. A system queue can be scheduled ahead of a batch queue. A multilevel feedback queue, a related design, can also move a process from one queue to another. The notes describe fixed groups, not that movement.</td></tr>
+</tbody></table>
+
+<h2 id="concurrency">4. Race conditions and the critical section</h2>
+<p>A race condition is what the notes describe: several threads use the same shared data, and the result depends on the order of their steps. The bugs are real and hard to repeat, because a different interleaving produces a different answer. Concurrent reads of data that nobody is changing are not a race. The trouble starts when at least one of the accesses writes.</p>
+<p>The critical section is the part of the code that touches that shared data. The notes' rule is that only one process runs inside it at a time. Everyone else waits until that process leaves. That mutual exclusion is what keeps the race from happening in that region.</p>
+<div class="diagram"><strong>One process in the critical section</strong>
+<div class="flow"><span class="node">Process A<br>inside</span><span class="node">Process B<br>waits</span><span class="node">Process C<br>waits</span></div>
+</div>
+
+<h2 id="sync">5. Semaphores, mutexes and deadlock</h2>
+<h3>Semaphores</h3>
+<p>A semaphore is a counter that controls entry to a shared resource. The notes use <code>wait()</code> and <code>signal()</code>. <code>wait()</code> decreases the counter and is how a process enters. <code>signal()</code> increases it and is how a process leaves. If the counter is zero, <code>wait()</code> blocks instead of letting another process in.</p>
+<pre><code>wait(S):
+    if S is 0, block
+    S = S - 1
+
+signal(S):
+    S = S + 1
+    wake one process that is waiting on S</code></pre>
+<p>A binary semaphore starts at 1, so one process can be inside. A counting semaphore starts at N and lets up to N processes in. The notes say the semaphore “prevents multiple processes from entering once.” That sentence is the binary case: they must not enter at the same time. The counter is what makes the more general form.</p>
+<h3>Mutex</h3>
+<p>A mutex is a lock. The notes define mutual exclusion as one holder at a time, which stops concurrent writers from corrupting the shared data. The thread that locks a mutex is the thread that should unlock it. A binary semaphore can be used for the same exclusion, but it does not record an owner.</p>
+<h3>Deadlock</h3>
+<p>Deadlock is the notes' picture of two or more processes waiting for each other forever. All four of these conditions are present when it happens. The notes' prevention rule is to break at least one of them.</p>
+<table><thead><tr><th>Condition</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td>Mutual exclusion</td><td>Only one process uses the resource at a time. The notes write “mutual exclusions.”</td></tr>
+<tr><td>Hold and wait</td><td>A process holds one resource and waits for another.</td></tr>
+<tr><td>No preemption</td><td>The OS cannot forcibly take the held resource away.</td></tr>
+<tr><td>Circular wait</td><td>A waits for B, and B waits for A. Longer cycles count too.</td></tr>
+</tbody></table>
+<p>A printer and a disk are enough to show the cycle. Process A holds the printer and waits for the disk. Process B holds the disk and waits for the printer. Neither can continue. Giving every process a fixed order, such as “always take the disk before the printer,” breaks circular wait. That ordering is the prevention method the notes name.</p>
+<div class="callout"><strong>Banker's algorithm is avoidance, not prevention.</strong> The notes place it next to resource ordering, under prevention. Ordering removes a deadlock condition. The banker's algorithm leaves the conditions in place and refuses a request that would leave the system unsafe. An unsafe state means deadlock might occur, not that it already has.</div>
+<p>Before the grant, each process has declared the most it will ever need. The state is safe when there is an order in which every process can receive its remaining need, finish, and return what it holds. The OS allows the request only when that order would still exist afterwards. If no such order exists, the request waits.</p>
+
+<h2 id="references">6. References in the notes</h2>
+<p>The last page is a reading list. A few titles in the notes are broader than the page they link to, and the GeeksforGeeks paths now sit under <code>/operating-systems/</code>. The links below are the pages those URLs open.</p>
+<h3>Linux</h3>
+<p>The command-line side of Linux is in <a href="linux.html">Linux for Beginners</a>.</p>
+<ul>
+<li><a href="https://www.kernel.org/doc/html/latest/" target="_blank" rel="noopener">The Linux kernel documentation</a></li>
+<li><a href="https://www.redhat.com/en/topics/linux/what-is-linux" target="_blank" rel="noopener">Red Hat's introduction to Linux</a>. The notes label this URL as process management and scheduling. The page itself is an overview of Linux.</li>
+<li><a href="https://www.kernel.org/doc/html/latest/admin-guide/mm/index.html" target="_blank" rel="noopener">Kernel admin-guide memory management</a></li>
+</ul>
+<h3>Windows</h3>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/windows-hardware/drivers/kernel/" target="_blank" rel="noopener">Kernel-mode architecture</a> on Microsoft Learn. The notes cite this as Windows architecture and internals.</li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/procthread/processes-and-threads" target="_blank" rel="noopener">Processes and threads</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/memory/memory-management" target="_blank" rel="noopener">Memory management</a></li>
+</ul>
+<h3>Unix</h3>
+<ul>
+<li><a href="https://www.unix.org/about.html" target="_blank" rel="noopener">About UNIX</a>, from the Open Group's UNIX site. The notes link <code>unix.org/what_is_unix.html</code>, and that path no longer resolves.</li>
+<li><a href="https://pubs.opengroup.org/onlinepubs/9699919799/" target="_blank" rel="noopener">POSIX.1-2017, the Single UNIX Specification</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Unix_architecture" target="_blank" rel="noopener">Unix architecture</a>. The notes point here for system calls and process control.</li>
+</ul>
+<h3>macOS</h3>
+<ul>
+<li><a href="https://developer.apple.com/documentation/kernel" target="_blank" rel="noopener">Apple's kernel documentation</a></li>
+<li><a href="https://github.com/apple-oss-distributions/xnu" target="_blank" rel="noopener">XNU source</a>, the kernel used by macOS. It combines Mach and BSD.</li>
+<li><a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Multithreading/Introduction/Introduction.html" target="_blank" rel="noopener">Archived threading guide</a></li>
+</ul>
+<h3>GeeksforGeeks</h3>
+<ul>
+<li><a href="https://www.geeksforgeeks.org/operating-systems/operating-systems/" target="_blank" rel="noopener">Operating systems guide</a></li>
+<li><a href="https://www.geeksforgeeks.org/operating-systems/cpu-scheduling-in-operating-systems/" target="_blank" rel="noopener">CPU scheduling</a></li>
+<li><a href="https://www.geeksforgeeks.org/operating-systems/memory-management-in-operating-system/" target="_blank" rel="noopener">Memory management</a></li>
+<li><a href="https://www.geeksforgeeks.org/operating-systems/introduction-of-process-synchronization/" target="_blank" rel="noopener">Process synchronization</a></li>
+</ul>
+<p class="note">Original material: operating system notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>

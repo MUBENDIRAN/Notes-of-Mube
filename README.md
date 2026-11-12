@@ -11,6 +11,7 @@ The catalogue website and individual topic articles are published with GitHub Pa
 - **Git & GitHub Actions article:** https://mubendiran.github.io/Notes-of-Mube/git-github-actions.html
 - **Linux article:** https://mubendiran.github.io/Notes-of-Mube/linux.html
 - **SQL article:** https://mubendiran.github.io/Notes-of-Mube/sql.html
+- **Operating systems article:** https://mubendiran.github.io/Notes-of-Mube/os.html
 
 ## 📄 PDF Notes Collection
 All original PDF notes are organized in one central Google Drive folder.
