@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Python notes by Mubendiran K: revision, functions and scope, complexity, and object-oriented programming.">
+<title>Python Programming | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Python</div>
+<h1>Python Programming</h1>
+<p class="sub">A structured, readable version of my Python revision notes. This article follows the 16 sections in the original 18-page notes, from language basics through object-oriented programming.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 18-page source notes · <a href="https://drive.google.com/file/d/1GYcDMVjjfK0DLJbFxt2pVTPDPlMCyx3-/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2403696?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#revision">1. Revision</a><a href="#functions">2. Functions and scope</a><a href="#complexity">3. Algorithms and complexity</a><a href="#abstraction">4. Abstraction and encapsulation</a><a href="#classes">5. Classes and objects</a><a href="#methods">6. Methods and overriding</a><a href="#access">7. Access and properties</a><a href="#inheritance">8. Inheritance</a><a href="#polymorphism">9. Polymorphism</a><a href="#abstract">10. Abstract classes and binding</a><a href="#references">11. References</a>
+</div></nav>
+<article>
+<p>The notes start with everyday Python, then the words used to talk about algorithms, then classes. The examples below are the snippets from the notes, completed far enough that each one is a valid fragment.</p>
+
+<h2 id="revision">1. Python revision</h2>
+<h3>floor, ceil and division</h3>
+<p>Both functions come from the <code>math</code> module. The notes' examples are right. The labels next to them are swapped.</p>
+<div class="callout"><strong><code>floor</code> goes down. <code>ceil</code> goes up.</strong> The notes call <code>floor</code> an “approx max” and <code>ceil</code> an “approx low,” then give <code>floor(3.7) → 3</code> and <code>ceil(3.7) → 4</code>. Those results are correct. <code>floor</code> is the greatest integer less than or equal to the value. <code>ceil</code> is the least integer greater than or equal to it. For a negative number the direction still matters: <code>floor(-3.2)</code> is <code>-4</code>, and <code>ceil(-3.2)</code> is <code>-3</code>.</div>
+<pre><code>import math
+math.floor(3.7)   # 3
+math.ceil(3.7)    # 4</code></pre>
+<table><thead><tr><th>Operator</th><th>What the notes say</th><th>In Python 3</th></tr></thead><tbody>
+<tr><td><code>/</code></td><td>Normal division, gives a decimal.</td><td>True division. The result is always a float. <code>7 / 2</code> is <code>3.5</code>. <code>4 / 2</code> is <code>2.0</code>, not the integer <code>2</code>.</td></tr>
+<tr><td><code>//</code></td><td>Floor division, does not produce a decimal.</td><td>Floor division, toward negative infinity. Two integers give an int: <code>7 // 2</code> is <code>3</code>, and <code>-7 // 2</code> is <code>-4</code>, not <code>-3</code>. If either operand is a float, the result is a float: <code>7.0 // 2</code> is <code>3.0</code>.</td></tr>
+</tbody></table>
+<h3>Dynamic typing</h3>
+<p>The notes contrast Python with C and Java. You do not write the type on the variable. The object you assign has a type, and that is checked when the line runs. <code>count = 1</code> and later <code>count = "one"</code> are both legal. Python is still strict about operations: <code>"1" + 2</code> is a <code>TypeError</code>, not a silent conversion.</p>
+<h3>List comprehension</h3>
+<p>A list comprehension builds a new list in one expression. The notes describe it as “this variable should contain these values from this loop, with this condition.” The figure in the PDF breaks the syntax into the output expression, the loop, and the filter:</p>
+<pre><code>squares = [n * n for n in range(6) if n % 2 == 0]
+# [0, 4, 16]</code></pre>
+<p class="note">That line is the shape of the figure. It is not a list copied from the original notes. <code>n * n</code> is the value that goes into the new list. <code>for n in range(6)</code> is the loop. <code>if n % 2 == 0</code> keeps the even numbers.</p>
+<h3>*args and **kwargs</h3>
+<p>Both let a function take a variable number of arguments. The notes say <code>*args</code> is for passing them and <code>**kwargs</code> is for accepting them. In the definition, both accept whatever the caller sends.</p>
+<pre><code>def show(*args, **kwargs):
+    print(args)     # a tuple of positional arguments
+    print(kwargs)   # a dict of keyword arguments
+
+show(1, 2, name="Ada")
+# (1, 2)
+# {'name': 'Ada'}</code></pre>
+<h3>Sorting and Timsort</h3>
+<p><code>list.sort</code> and the built-in <code>sorted</code> both use Timsort. The notes call it a combination of merge sort and insertion sort, with a worst case of <code>O(n log n)</code>. That worst case is right. Timsort's advantage is the insertion-sort side: a run that is already ordered is cheaper, and the best case is <code>O(n)</code>.</p>
+<pre><code>nums = [3, 1, 2]
+nums.sort()            # sorts the list itself, returns None
+copy = sorted(nums)    # a new list; nums is unchanged</code></pre>
+<p class="note"><code>sort</code> is a list method. <code>sorted</code> works on any iterable and returns a new list. The notes name them together as functions.</p>
+<h3>Garbage collection</h3>
+<p>The notes describe the garbage collector as automatic memory management. It finds objects the program can no longer use and frees them, so you do not <code>free</code> memory by hand. In C, forgetting a free is a leak, and freeing too early is a crash. CPython's usual path is reference counting: when the last reference disappears, the object is freed immediately. A separate cyclic collector handles groups of objects that point at each other and would otherwise never reach a count of zero. The <code>gc</code> module is the interface to that cycle collector. The notes' reference list names it next to <code>abc</code>.</p>
+
+<h2 id="functions">2. Functions, purity and LEGB</h2>
+<p>The notes separate a subroutine from a function. A subroutine is a named block you call again for one task. A function, in their wording, takes inputs of more than one kind and produces a concrete output. Python has one construct for both, <code>def</code>. What they are pointing at is whether the call is for its effect or for the value it returns.</p>
+<p>A parameter is the name in the definition. An argument is the value at the call. The notes say the argument is passed “through the function definition.” It is passed through the call.</p>
+<pre><code>def greet(name):      # name is the parameter
+    return "Hello " + name
+
+greet("Ada")          # "Ada" is the argument</code></pre>
+<p>An interface, in the notes, is the set of actions an object offers: what it can do, not how. The implementation is the code that does it. Python has no <code>interface</code> keyword. Section 10 is where the notes build that idea with abstract base classes.</p>
+<table><thead><tr><th></th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td>Pure function</td><td>The same arguments always produce the same result. A pure function also does not change anything outside itself. Printing, writing a file, or reading a global are side effects, so a function that does those is not pure even if the return value repeats.</td></tr>
+<tr><td>Impure function</td><td>It depends on, or changes, state that was not passed in as an argument. The notes call that a side effect.</td></tr>
+</tbody></table>
+<h3>LEGB</h3>
+<p>A namespace maps a name to an object. When Python sees a name, it searches in the order the notes' figure titles LEGB:</p>
+<div class="diagram"><strong>LEGB, first match wins</strong>
+<div class="flow"><span class="node">Local</span><span class="arrow">→</span><span class="node">Enclosing</span><span class="arrow">→</span><span class="node">Global</span><span class="arrow">→</span><span class="node">Built-in</span></div>
+</div>
+<ul>
+<li><strong>Local:</strong> names assigned inside the current function.</li>
+<li><strong>Enclosing:</strong> names in the function that contains this one.</li>
+<li><strong>Global:</strong> names at the module level.</li>
+<li><strong>Built-in:</strong> names such as <code>len</code> and <code>print</code>.</li>
+</ul>
+<p class="note">Assignment creates a local name. To assign a global, or a name in the enclosing function, the function needs <code>global</code> or <code>nonlocal</code>. Those two words are the way out of the “read-only outer scope” rule. They are not drawn in the figure.</p>
+
+<h2 id="complexity">3. Algorithms and complexity</h2>
+<table><thead><tr><th>Word</th><th>Definition in the notes</th></tr></thead><tbody>
+<tr><td>Algorithm</td><td>A set of rules you follow to get a required output. It has to finish.</td></tr>
+<tr><td>Data</td><td>A raw value. The notes say it has no meaning until something structures it.</td></tr>
+<tr><td>Data structure</td><td>An arrangement of data so an operation can reach it quickly. The notes' question to keep is why this structure, and the tool they name next is pseudocode.</td></tr>
+</tbody></table>
+<p>Time complexity is the notes' name for measuring that cost by counting steps, not by the clock on one laptop. The figure runs from <code>O(n²)</code> toward <code>O(1)</code>. The usual steps between those two ends are below. Toward <code>O(1)</code>, the step count grows more slowly as the input grows.</p>
+<div class="diagram"><strong>Slower growth toward faster growth</strong>
+<div class="flow"><span class="node">O(n²)</span><span class="arrow">→</span><span class="node">O(n log n)</span><span class="arrow">→</span><span class="node">O(n)</span><span class="arrow">→</span><span class="node">O(log n)</span><span class="arrow">→</span><span class="node">O(1)</span></div>
+</div>
+<h3>A priori and a posteriori</h3>
+<table><thead><tr><th></th><th>What the notes describe</th></tr></thead><tbody>
+<tr><td>A priori</td><td>Theoretical. You count steps from the algorithm and set the machine, the language and the clock aside. The notes say this assumes the external factors. The useful reading is that those factors are held out of the count.</td></tr>
+<tr><td>A posteriori</td><td>A measurement. You run the algorithm and record the time, and the memory, it actually used.</td></tr>
+</tbody></table>
+<p>Time complexity, in the notes, is the number of steps to finish. Space complexity is the memory to finish. They split space into a fixed part and a variable part. The fixed part does not grow with the input: the code, and simple variables. The variable part does: the input itself, extra lists, and the call stack when recursion deepens.</p>
+<h3>Big O, Big Omega, Big Theta</h3>
+<table><thead><tr><th>Notation</th><th>What the notes say</th></tr></thead><tbody>
+<tr><td>Big O</td><td>An upper bound. The notes use it for the worst case.</td></tr>
+<tr><td>Big Ω</td><td>A lower bound. The notes use it for the best case.</td></tr>
+<tr><td>Big Θ</td><td>The bound is tight. If the notes can say both <code>O(n log n)</code> and <code>Ω(n log n)</code>, they write <code>Θ(n log n)</code>. The running time grows like <code>n log n</code> at both ends.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Worst case and Big O are not the same dial.</strong> Worst, best and average name which input you are talking about. O, Ω and Θ name how tight the bound is. You can put an O bound on the best case, and an Ω bound on the worst case. Intro notes, including these, pair O with worst and Ω with best because that is the pair people use most often.</div>
+
+<h2 id="abstraction">4. Abstraction, ADTs and encapsulation</h2>
+<p>Data abstraction, in the notes, means showing the essential operations and hiding the representation. They connect it with modularity: the program splits into pieces you can use without reading the inside. A class is their representation of an abstract data type. An ADT is a set of values plus the operations on those values.</p>
+<p>Two kinds of function support that, in the notes' wording from data-abstraction courses:</p>
+<ul>
+<li><strong>Constructor:</strong> builds a value of the abstract type.</li>
+<li><strong>Selector:</strong> reads information back out of it.</li>
+</ul>
+<p>A concrete type is one whose representation you are allowed to see. A Python list is concrete: you know it is a list. The notes say an abstract object's representation is unknown to the caller. Unknown here means hidden, not that Python has forgotten it.</p>
+<p>The notes' later components of abstraction in Python are abstract methods, concrete methods, abstract properties, and the rule that you do not instantiate the abstract class. Those are written out in the abstract-class section.</p>
+<table><thead><tr><th></th><th>Level in the notes</th><th>Question it answers</th></tr></thead><tbody>
+<tr><td>Abstraction</td><td>Design. Expose what is necessary and hide the rest.</td><td>What can this object do?</td></tr>
+<tr><td>Encapsulation</td><td>Implementation. Put the data and the methods that touch it in one class, and block casual writes to the data.</td><td>How is this data kept intact?</td></tr>
+</tbody></table>
+<p>The notes' encapsulation principle is the pairing of private instance variables with public methods. The caller uses the method. The caller does not reach in and change the field.</p>
+
+<h2 id="classes">5. Classes, constructors and <code>__str__</code></h2>
+<p>The notes place the name with Monty Python's Flying Circus. Guido van Rossum, at Centrum Wiskunde &amp; Informatica, released Python in 1991.</p>
+<p>A class is a template that bundles data and functions. An object is one instance. Many objects can come from one class, each with its own attribute values. The notes' first example shares one class attribute:</p>
+<pre><code>class Dog:
+    sound = "bark"
+
+dog1 = Dog()
+print(dog1.sound)    # bark</code></pre>
+<p><code>sound</code> lives on the class. Every dog sees it until an instance assigns its own <code>sound</code>, which hides the class value for that instance only.</p>
+<p><code>__init__</code> is the constructor the notes name. Python calls it when the object is created. <code>self</code> is the instance the method is running on. The name <code>self</code> is a convention, not a keyword. It has to be the first parameter.</p>
+<pre><code>class Dog:
+    def __init__(self, name, age):
+        self.name = name    # instance attribute
+        self.age = age
+
+    def bark(self):
+        print(f"{self.name} is barking!")
+
+    def __str__(self):
+        return f"{self.name} is {self.age} years old"
+
+dog1 = Dog("Buddy", 3)
+print(dog1.name)
+print(dog1)
+# Buddy
+# Buddy is 3 years old</code></pre>
+<p>Without <code>__str__</code>, <code>print(dog1)</code> looks like <code>&lt;__main__.Dog object at 0x...&gt;</code>. The notes describe that default. <code>__str__</code> is what <code>print</code> and <code>str()</code> use.</p>
+<table><thead><tr><th></th><th>Where it lives</th></tr></thead><tbody>
+<tr><td>Class variable</td><td>On the class, outside any method. All instances share it until one instance assigns the same name.</td></tr>
+<tr><td>Instance variable</td><td>On <code>self</code>, usually inside <code>__init__</code>. Each object has its own.</td></tr>
+</tbody></table>
+<p class="note">A class variable that is a list or a dict is one shared object. Appending on one dog changes the list the other dogs see. A string or a number does not have that trap, because assigning <code>self.sound = "woof"</code> creates a new instance attribute instead of editing the class value.</p>
+
+<h2 id="methods">6. Static methods, class methods and overriding</h2>
+<p>The notes say both a static method and a class method are bound to the class rather than to one instance. A static method receives neither the instance nor the class. A class method receives the class as <code>cls</code>.</p>
+<pre><code>class Dog:
+    @staticmethod
+    def info():
+        print("Dogs are loyal animals")
+
+    @classmethod
+    def count(cls):
+        print("there are many dogs of class", cls)
+
+dog = Dog()
+dog.info()     # static method, also callable as Dog.info()
+Dog.count()    # class method
+# Dogs are loyal animals
+# there are many dogs of class &lt;class '__main__.Dog'&gt;</code></pre>
+<p>Method overriding is a subclass replacing a method the parent already has. The notes' pair is <code>Animal</code> and <code>Dog</code>:</p>
+<pre><code>class Animal:
+    def sound(self):
+        print("...")
+
+class Dog(Animal):
+    def sound(self):
+        print("Woof")</code></pre>
+<p class="note">The PDF shows <code>class Dog(Animal)</code> and the new <code>sound</code>. The parent class above is filled in so the snippet names the method it overrides.</p>
+
+<h2 id="access">7. Public, protected, private and properties</h2>
+<p>Encapsulation, repeated here for Python, means the class hides internal details and exposes what the caller needs. The notes use three spellings. Only one of them changes the name Python stores.</p>
+<table><thead><tr><th>Spelling</th><th>Intent in the notes</th><th>What Python does</th></tr></thead><tbody>
+<tr><td><code>self.name</code></td><td>Public. Readable from anywhere. This is the default.</td><td>The attribute is <code>name</code>.</td></tr>
+<tr><td><code>self._age</code></td><td>Protected. For the class and its subclasses. Not a hard wall.</td><td>Still just <code>_age</code>. The underscore is a warning to other programmers. <code>emp._age</code> works.</td></tr>
+<tr><td><code>self.__salary</code></td><td>Private. Not for direct use outside the class.</td><td>Name mangling. Inside <code>Employee</code>, <code>__salary</code> is stored as <code>_Employee__salary</code>. <code>emp.__salary</code> raises <code>AttributeError</code>. <code>emp._Employee__salary</code> still reads it.</td></tr>
+</tbody></table>
+<div class="callout"><strong>A double underscore is not a lock.</strong> Mangling avoids accidental clashes in subclasses. It does not stop a caller who knows the class name. Methods such as <code>__init__</code> and <code>__str__</code> are not mangled: a name that also ends in double underscores is left as it is.</div>
+<pre><code>class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self.__salary = salary
+
+    def show_salary(self):
+        print("Salary:", self.__salary)
+
+emp = Employee("Robert", 6000)
+emp.show_salary()          # Salary: 6000</code></pre>
+<p>The notes' protected example is a subclass reading <code>self._age</code>. That works because <code>_age</code> was never hidden:</p>
+<pre><code>class Employee:
+    def __init__(self, name, age):
+        self.name = name
+        self._age = age
+
+class SubEmployee(Employee):
+    def show_age(self):
+        print("Age:", self._age)
+
+emp = SubEmployee("Ross", 30)
+emp.show_age()             # Age: 30</code></pre>
+<p>Getters and setters are how the notes give controlled access without a <code>getName</code> method from Java. <code>@property</code> reads. <code>@name.setter</code> writes.</p>
+<pre><code>class Employee:
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value</code></pre>
+<p class="note">The PDF shows the two decorators. The <code>__init__</code> that creates <code>_name</code> is added here so the property has a place to store the string.</p>
+
+<h2 id="inheritance">8. Inheritance and <code>super</code></h2>
+<p>A child class inherits attributes and methods from a parent. <code>super()</code> calls a method on that parent. The notes use it inside the child's <code>__init__</code> so the parent can set the attributes it owns.</p>
+<pre><code>class Animal:
+    def __init__(self, name):
+        self.name = name
+
+class Dog(Animal):
+    def __init__(self, name, breed):
+        super().__init__(name)
+        self.breed = breed</code></pre>
+<table><thead><tr><th>Kind</th><th>Shape in the notes</th></tr></thead><tbody>
+<tr><td>Single</td><td>One child, one parent.</td></tr>
+<tr><td>Multiple</td><td>One child, more than one parent. <code>class Employee(Person, Job)</code>.</td></tr>
+<tr><td>Multilevel</td><td>A child of a class that is itself a child.</td></tr>
+<tr><td>Hierarchical</td><td>Several children of one parent.</td></tr>
+<tr><td>Hybrid</td><td>More than one of those patterns in the same tree.</td></tr>
+</tbody></table>
+<p class="note">With one parent, <code>super()</code> means that parent. With several, Python builds a method resolution order, a single list of classes, and <code>super()</code> continues at the next class in that list. That order is what keeps two parents that share a grandparent from running the grandparent's <code>__init__</code> twice.</p>
+
+<h2 id="polymorphism">9. Polymorphism</h2>
+<p>Polymorphism is the notes' “many forms”: the same method, function or operator behaves according to the object it is given.</p>
+<table><thead><tr><th>Kind</th><th>What the notes say about Python</th></tr></thead><tbody>
+<tr><td>Compile-time, overloading</td><td>A compiler would pick the method from the argument types. Python does not. It is dynamically typed, so there is no compile-time choice of one method among several with the same name. Default arguments, <code>*args</code> and <code>**kwargs</code> are how one function accepts several call shapes.</td></tr>
+<tr><td>Run-time, overriding</td><td>The method that runs is the one on the object that was called, decided while the program runs. A child that defines <code>sound</code> replaces the parent's <code>sound</code>.</td></tr>
+<tr><td>Built-ins</td><td><code>len</code> and <code>max</code> accept different types and use that type's own behaviour. <code>len</code> calls <code>__len__</code>.</td></tr>
+<tr><td>Functions</td><td>Duck typing. The function cares that the object has the method it calls, not that the object is a particular class.</td></tr>
+<tr><td>Operators</td><td><code>+</code> adds numbers and concatenates strings. That is operator overloading. The method behind <code>+</code> is <code>__add__</code>.</td></tr>
+</tbody></table>
+<pre><code>len("Ada")       # 3
+len([1, 2, 3])   # 3
+1 + 2            # 3
+"A" + "da"       # Ada</code></pre>
+
+<h2 id="abstract">10. Abstract classes, interfaces and binding</h2>
+<p>An abstract class is a template. The notes say you cannot construct it. It holds abstract methods that subclasses must implement. Python expresses this with the <code>abc</code> module.</p>
+<pre><code>from abc import ABC, abstractmethod
+
+class Animal(ABC):
+    @abstractmethod
+    def sound(self):
+        pass
+
+class Dog(Animal):
+    def sound(self):
+        return "Woof"
+
+# Animal() raises TypeError
+Dog().sound()    # "Woof"</code></pre>
+<table><thead><tr><th>Piece</th><th>Role in the notes</th></tr></thead><tbody>
+<tr><td>Abstract method</td><td>Declared, with no useful body, inside an abstract class. A subclass supplies the body. Until it does, the subclass is abstract too.</td></tr>
+<tr><td>Concrete method</td><td>A normal method in the abstract class. Subclasses inherit it and can call it.</td></tr>
+<tr><td>Abstract property</td><td>A property marked abstract, so a subclass must provide it. The decorators are <code>@property</code> and <code>@abstractmethod</code>.</td></tr>
+</tbody></table>
+<pre><code>class Animal(ABC):
+    @property
+    @abstractmethod
+    def species(self):
+        pass</code></pre>
+<p>Trying to call <code>Animal()</code> raises <code>TypeError</code>. That is the instantiation rule in the notes.</p>
+<p>Python has no <code>interface</code> keyword. The notes treat an abstract base class that contains only abstract methods as the interface: a contract, and no shared code. An abstract class in the wider sense may also contain concrete methods, which is the shared code. Both are written with <code>abc.ABC</code>.</p>
+<h3>Static and dynamic binding</h3>
+<p>The notes contrast Python with Java. Java can bind some calls when the class is compiled. Python almost never does.</p>
+<ul>
+<li>The class body runs when the class statement finishes, so the method objects are created then. That is the closest thing the notes call static binding.</li>
+<li>Which method runs for <code>dog.sound()</code> is decided at the call, from the class of that object. A child that defines <code>sound</code> is the one that runs. That is dynamic binding, and it is why overriding works with no extra keyword.</li>
+<li>Overloading, several methods with the same name and different parameter lists, does not exist. One method uses defaults or <code>*args</code> and <code>**kwargs</code>.</li>
+</ul>
+
+<h2 id="references">11. References in the notes</h2>
+<ul>
+<li><a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener">The Python tutorial</a>. The notes point here for <code>math</code>, division, comprehensions, <code>*args</code>, functions and scopes.</li>
+<li><a href="https://realpython.com/" target="_blank" rel="noopener">Real Python</a>, and the notes' OOP chapter at <a href="https://realpython.com/python3-object-oriented-programming/" target="_blank" rel="noopener">Object-oriented programming in Python 3</a>.</li>
+<li><a href="https://www.geeksforgeeks.org/python/python-programming-language-tutorial/" target="_blank" rel="noopener">GeeksforGeeks Python tutorial</a>. The notes cite <code>/python-programming-language/</code>. That path now lives under <code>/python/</code>.</li>
+<li><a href="https://www.programiz.com/python-programming" target="_blank" rel="noopener">Programiz: Learn Python</a>.</li>
+<li><a href="https://docs.python.org/3/library/abc.html" target="_blank" rel="noopener"><code>abc</code></a>, the abstract-base-class module. The notes' sentence also names the garbage collector. Its page is <a href="https://docs.python.org/3/library/gc.html" target="_blank" rel="noopener"><code>gc</code></a>. The URL printed in the PDF is the <code>abc</code> page.</li>
+</ul>
+<p class="note">Original material: Python notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
