@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Linux beginner notes by Mubendiran K: kernel and shell, the directory hierarchy, permissions, shell scripting, networking, firewalls and everyday commands.">
+<title>Linux for Beginners | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · Beginner</div>
+<h1>Linux for Beginners</h1>
+<p class="sub">A structured, readable version of my Linux learning and revision notes. This article follows the topics and commands in the original 10-page notes.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 10-page source notes · <a href="https://drive.google.com/file/d/13u0EDU-rEEA6Um2y35oNWi_ZVvN0YOug/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2402823?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#overview">1. Overview and architecture</a><a href="#filesystem">2. Directory hierarchy</a><a href="#network">3. Network commands</a><a href="#firewall">4. Firewalls</a><a href="#scripting">5. Shell scripting</a><a href="#loops">6. Loops, functions and awk</a><a href="#permissions">7. Permissions</a><a href="#boot">8. Boot and firmware</a><a href="#files">9. Files and processes</a><a href="#admin">10. Packages, disks and users</a><a href="#tools">11. Flags, text and archives</a><a href="#install">12. Installation</a>
+</div></nav>
+<article>
+<p>Linux is the kernel at the centre of a Unix-like operating system, together with a shell, an init process, background services and the GNU command-line tools. These notes walk through that layout, the directory tree, permissions, shell scripts, networking, firewalls and the commands used day to day.</p>
+
+<h2 id="overview">1. Overview and architecture</h2>
+<p>The notes place Linux with Linus Torvalds in Finland, and Unix with Bell Labs in Murray Hill, New Jersey. Torvalds released the Linux kernel in 1991. Unix came earlier, from Bell Labs. Linux is a kernel; a full distribution adds the shell, libraries and the rest of the system around it.</p>
+<h3>Core components in the notes</h3>
+<table><thead><tr><th>Piece</th><th>What the notes say</th></tr></thead><tbody>
+<tr><td>Kernel</td><td>Linux. It manages the computer's hardware.</td></tr>
+<tr><td>Shell</td><td>Bash, the Bourne Again shell. This is the program that reads the commands you type.</td></tr>
+<tr><td>Init system</td><td>The first process the kernel starts. On current Ubuntu and many other distributions that process is systemd, PID 1.</td></tr>
+<tr><td>Daemon</td><td>A background service that runs without an interactive user.</td></tr>
+<tr><td>Graphical server</td><td>X11 or Wayland. It displays graphics.</td></tr>
+<tr><td>Desktop environment</td><td>The graphical interface built on that server.</td></tr>
+<tr><td>GNU tools</td><td>The basic command-line utilities, such as the file and text commands later in these notes.</td></tr>
+</tbody></table>
+<div class="diagram"><strong>From firmware to a shell</strong>
+<div class="flow"><span class="node">Firmware</span><span class="arrow">→</span><span class="node">Bootloader</span><span class="arrow">→</span><span class="node">Linux kernel</span><span class="arrow">→</span><span class="node">Init (PID 1)</span></div>
+<div class="flow"><span class="node">Daemons</span><span class="node">Shell (Bash)</span><span class="node">Graphical server</span><span class="node">Desktop</span></div>
+</div>
+<h3>Kernels the notes compare</h3>
+<table><thead><tr><th>System</th><th>How the notes label the kernel</th></tr></thead><tbody>
+<tr><td>Windows</td><td>Hybrid. The Windows NT kernel.</td></tr>
+<tr><td>macOS</td><td>Hybrid. XNU, a mix of Mach and BSD.</td></tr>
+<tr><td>Android</td><td>The notes say hybrid, customized Linux. Android uses the Linux kernel with its own changes. Linux itself is a monolithic kernel.</td></tr>
+<tr><td>iOS</td><td>The same family as macOS. The notes also write “microkernel” and BSD. XNU is the hybrid kernel shared with macOS: Mach plus BSD, not a pure microkernel.</td></tr>
+</tbody></table>
+<p>Two names from the same page belong with boot and with the tools:</p>
+<ul>
+<li><strong>GRUB</strong> is the Grand Unified Bootloader.</li>
+<li><strong>UEFI</strong> is the Unified Extensible Firmware Interface.</li>
+<li><strong>GNU</strong> is a recursive name: GNU's Not Unix.</li>
+</ul>
+
+<h2 id="filesystem">2. Directory hierarchy</h2>
+<p>Everything in the filesystem hangs from one top directory, <code>/</code>. The notes list the standard directories under it and what each one is for.</p>
+<div class="callout"><strong><code>/</code> and <code>/root</code> are different.</strong> <code>/</code> is the top of the tree and contains every other directory. <code>/root</code> is the home directory of the root user. It is one directory among the others, not the top of the filesystem. The original notes place both ideas in the same line.</div>
+<table><thead><tr><th>Path</th><th>Role in the notes</th></tr></thead><tbody>
+<tr><td><code>/bin</code></td><td>Binary executables such as <code>ls</code>, <code>cp</code>, <code>mv</code> and <code>cat</code>.</td></tr>
+<tr><td><code>/sbin</code></td><td>System binaries such as <code>mount</code> and <code>shutdown</code>. These need superuser privileges.</td></tr>
+<tr><td><code>/lib</code></td><td>Libraries. Programs load shared libraries from here.</td></tr>
+<tr><td><code>/usr</code></td><td>The notes expand this as Unix System Resources: <code>/usr/bin</code> and <code>/usr/lib</code>, read-only and managed by the system. Historically the name was the user hierarchy. Many current distributions merge <code>/bin</code> into <code>/usr/bin</code>.</td></tr>
+<tr><td><code>/boot</code></td><td>Files required to boot: GRUB and <code>grub.cfg</code>, plus the kernel and initramfs. The notes write “RAM” in this list; that directory does not hold system memory.</td></tr>
+<tr><td><code>/dev</code></td><td>Device files. The notes give <code>/dev/tty</code> as the kind of entry that represents a terminal.</td></tr>
+<tr><td><code>/etc</code></td><td>System configuration as editable text. The notes cite <code>/etc/passwd</code>, the user account list.</td></tr>
+<tr><td><code>/home</code></td><td>Per-user files and config, such as <code>.bashrc</code>.</td></tr>
+<tr><td><code>/media</code></td><td>Mount points for removable media such as CDs, DVDs and USB drives on modern systems.</td></tr>
+<tr><td><code>/mnt</code></td><td>A place for manual mounts, including a remote filesystem you attach yourself.</td></tr>
+<tr><td><code>/proc</code></td><td>A virtual filesystem. Process IDs appear here as directories, along with kernel status.</td></tr>
+<tr><td><code>/sys</code></td><td>sysfs, another virtual filesystem, for kernel and device information.</td></tr>
+<tr><td><code>/run</code></td><td>Temporary runtime data for the current boot.</td></tr>
+<tr><td><code>/srv</code></td><td>Data a hosted service provides, such as web content.</td></tr>
+<tr><td><code>/var</code></td><td>Files that change while the system runs. Logs live in <code>/var/log</code>.</td></tr>
+<tr><td><code>/tmp</code></td><td>Temporary files created by applications or users. The sticky bit is set here.</td></tr>
+<tr><td><code>/opt</code></td><td>Optional third-party software, kept out of the core system directories.</td></tr>
+</tbody></table>
+<p>The sticky bit on <code>/tmp</code> lets any user create files there, and lets only the file owner (or root) delete or rename that file. Other users cannot remove someone else's temporary files.</p>
+<p class="note">The directory layout is documented in <a href="https://man7.org/linux/man-pages/man7/hier.7.html" target="_blank" rel="noopener"><code>hier(7)</code></a>.</p>
+
+<h2 id="network">3. Network commands</h2>
+<p>The notes collect these as further network tools, beside the later administration list.</p>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>hostname</code></td><td>Shows or sets the system's network name.</td></tr>
+<tr><td><code>route</code></td><td>Displays or changes the routing table. The notes mark it as an older tool. <code>ip route</code> is the current command for the same job.</td></tr>
+<tr><td><code>nmcli</code></td><td>NetworkManager's command line. It manages connections through NetworkManager.</td></tr>
+<tr><td><code>ethtool</code></td><td>Shows or changes Ethernet device settings.</td></tr>
+<tr><td><code>iwconfig</code></td><td>Shows or sets wireless network settings. It is the older wireless tool.</td></tr>
+<tr><td><code>scp</code></td><td>Copies files securely between systems over SSH.</td></tr>
+<tr><td><code>wget</code></td><td>Downloads files or pages from the internet. The notes expand the name as World Wide Web Get.</td></tr>
+<tr><td><code>telnet</code></td><td>Tests connectivity to a specific port. The notes mark it as not secure and outdated. Use it only against a port you are diagnosing, not to log in.</td></tr>
+</tbody></table>
+
+<h2 id="firewall">4. UFW and cloud firewalls</h2>
+<p>UFW is the Uncomplicated Firewall, a host firewall used on Ubuntu. The notes treat it as the system-level firewall and contrast it with a cloud security group.</p>
+<table><thead><tr><th>Command</th><th>Action in the notes</th></tr></thead><tbody>
+<tr><td><code>ufw status</code></td><td>Shows the rules.</td></tr>
+<tr><td><code>ufw enable</code></td><td>Turns the firewall on.</td></tr>
+<tr><td><code>ufw allow 22</code></td><td>Allows SSH, which listens on port 22 by default.</td></tr>
+<tr><td><code>ufw deny 80</code></td><td>Blocks HTTP.</td></tr>
+<tr><td><code>ufw delete allow 22</code></td><td>Removes that allow rule.</td></tr>
+</tbody></table>
+<p class="note">These commands need root, so on Ubuntu they are run with <code>sudo</code>. On a remote machine, allow SSH before you enable UFW. Enabling it with no SSH rule drops the connection you are using.</p>
+<h3>Security groups</h3>
+<p>The notes describe a security group as a virtual firewall for an EC2 instance or another cloud service. It decides which ports and IP addresses are allowed inbound and outbound. The source writes “IPS” in the flow; in this section that means IP addresses.</p>
+<div class="diagram"><strong>Traffic through a security group</strong>
+<div class="flow"><span class="node">Data coming in</span><span class="arrow">→</span><span class="node">Inbound</span><span class="arrow">→</span><span class="node">Ports and IPs allowed</span></div>
+<div class="flow"><span class="node">Ports and IPs allowed</span><span class="arrow">→</span><span class="node">Outbound</span><span class="arrow">→</span><span class="node">Data going out</span></div>
+</div>
+<table><thead><tr><th>Level</th><th>What it filters</th></tr></thead><tbody>
+<tr><td>UFW</td><td>The system. Rules on that Linux machine.</td></tr>
+<tr><td>Security group</td><td>The cloud. Rules in front of the instance.</td></tr>
+</tbody></table>
+<p>A packet to a cloud instance has to be allowed by the security group and then by the host firewall. Either one can still block it.</p>
+
+<h2 id="scripting">5. Shell scripting</h2>
+<p>A shell script is a text file of commands for the shell, usually Bash. The first line is the shebang. It tells the system which interpreter should run the file.</p>
+<pre><code>#!/bin/bash</code></pre>
+<p>The notes run a script in two steps: make it executable, then start it.</p>
+<pre><code>chmod +x script.sh
+./script.sh
+bash script.sh</code></pre>
+<p class="note">The original notes write <code>chmod +x .sh</code> and <code>sudo bash .sh</code>. <code>sudo</code> is only needed when the script itself needs root. <code>./script.sh</code> uses the shebang. <code>bash script.sh</code> chooses Bash even if the file is not executable.</p>
+<h3>Variables</h3>
+<p>There is no space around <code>=</code>. <code>$</code> reads the value. The notes remind you that shell variables are strings unless you ask for arithmetic.</p>
+<pre><code>#!/bin/bash
+name="Bro"
+echo "Hello $name"
+
+# Arithmetic uses $(( ))
+sum=$((a + b))</code></pre>
+<h3>User input</h3>
+<pre><code>#!/bin/bash
+read -p "Enter your name: " name
+echo "Hello $name"</code></pre>
+<p><code>-p</code> prints the prompt on the same line and stores the answer in <code>name</code>.</p>
+<h3>Conditions</h3>
+<pre><code>#!/bin/bash
+if [ "$x" -gt 10 ]; then
+  echo "big"
+else
+  echo "small"
+fi</code></pre>
+<p>The semicolon ends the test when <code>then</code> stays on the same line. It is not part of the comparison itself. Quoting <code>"$x"</code> keeps an empty value from breaking the test. The notes show <code>$x</code> unquoted.</p>
+<table><thead><tr><th>Operator</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td><code>-eq</code></td><td>Equal.</td></tr>
+<tr><td><code>-ne</code></td><td>Not equal.</td></tr>
+<tr><td><code>-gt</code></td><td>Greater than.</td></tr>
+<tr><td><code>-lt</code></td><td>Less than.</td></tr>
+</tbody></table>
+<p class="note">These operators compare integers. The while loop later uses <code>-le</code>, less than or equal. <code>-ge</code> is greater than or equal. It is not in the original operator list.</p>
+
+<h2 id="loops">6. Loops, functions and awk</h2>
+<h3>Loops from the notes</h3>
+<pre><code># For loop
+for i in {1..5}; do
+  echo "$i"
+done
+
+# While loop
+count=1
+while [ "$count" -le 5 ]; do
+  echo "$count"
+  ((count++))
+done</code></pre>
+<p><code>{1..5}</code> expands to the numbers 1 through 5. <code>((count++))</code> adds one. The notes compare that with <code>count += 1</code> in Python. <code>-le</code> means less than or equal.</p>
+<h3>Functions and arguments</h3>
+<pre><code>greet() {
+  echo "Hello $1"
+}
+
+greet "Bro"</code></pre>
+<table><thead><tr><th>Parameter</th><th>Meaning</th></tr></thead><tbody>
+<tr><td><code>$1</code></td><td>First argument.</td></tr>
+<tr><td><code>$2</code></td><td>Second argument.</td></tr>
+<tr><td><code>$@</code></td><td>All arguments.</td></tr>
+<tr><td><code>$#</code></td><td>How many arguments were passed.</td></tr>
+</tbody></table>
+<h3>awk</h3>
+<p>The notes introduce awk as a text-processing and reporting language, and name <code>gsub</code> as global substitute.</p>
+<table><thead><tr><th>Piece</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td><code>NR</code></td><td>Number of records. The current line number.</td></tr>
+<tr><td><code>NF</code></td><td>Number of fields on the current line.</td></tr>
+<tr><td><code>$1</code>, <code>$2</code></td><td>Columns on the current line.</td></tr>
+<tr><td><code>{ }</code></td><td>The commands to run for each line.</td></tr>
+<tr><td><code>BEGIN { }</code></td><td>Code that runs before any line is read.</td></tr>
+<tr><td><code>END { }</code></td><td>Code that runs after every line has been read.</td></tr>
+</tbody></table>
+<pre><code>awk '{ print $1 }' file.txt</code></pre>
+<p class="note">That one-liner is the form the notes use later. A line that also uses <code>gsub</code>, <code>BEGIN</code> and <code>END</code> is an additional example:</p>
+<pre><code>awk 'BEGIN { print "start" }
+{ gsub(/old/, "new"); print NR, $1 }
+END { print "fields on the last line:", NF }' file.txt</code></pre>
+
+<h2 id="permissions">7. Permissions</h2>
+<p>Numeric <code>chmod</code> adds three values: read is 4, write is 2, execute is 1. Each digit of the mode is the sum for one class of user. The three digits are owner, group, then others.</p>
+<table><thead><tr><th>Permission</th><th>Number</th></tr></thead><tbody>
+<tr><td>read (r)</td><td>4</td></tr>
+<tr><td>write (w)</td><td>2</td></tr>
+<tr><td>execute (x)</td><td>1</td></tr>
+</tbody></table>
+<table><thead><tr><th>Mode</th><th>Who can do what</th></tr></thead><tbody>
+<tr><td><code>400</code></td><td>The owner can read. Nobody else can read, write or execute.</td></tr>
+<tr><td><code>644</code></td><td>The owner can read and write. Group and others can read.</td></tr>
+<tr><td><code>755</code></td><td>The owner can read, write and execute. Group and others can read and execute.</td></tr>
+</tbody></table>
+<div class="callout"><strong>755 does not grant write to other people.</strong> The original notes describe 755 as “others can read/write/execute.” Write for the owner only is the 2 in the first digit. Group and others have 5, which is read plus execute. A mode that also gives everyone write is 777, and that is rarely what a normal file should have.</div>
+<p>The notes also show the commands that change and inspect this metadata:</p>
+<pre><code>chmod 755 script.sh
+chown user:group script.sh
+stat script.sh</code></pre>
+<p><code>chown user:group</code> sets the owner and the group. <code>stat</code> shows size, permissions and timestamps. The notes phrase the classes as “owner group user other”; user and owner are the same class, so the mode has three digits, not four.</p>
+
+<h2 id="boot">8. Boot and firmware</h2>
+<table><thead><tr><th>Term</th><th>Meaning in the notes</th></tr></thead><tbody>
+<tr><td>BIOS</td><td>Basic Input/Output System. The older firmware that starts the machine.</td></tr>
+<tr><td>UEFI</td><td>Unified Extensible Firmware Interface. The firmware that replaced BIOS on current PCs.</td></tr>
+<tr><td>MBR</td><td>Master Boot Record. The legacy boot record and partition layout at the start of a disk.</td></tr>
+<tr><td>GPT</td><td>GUID Partition Table. The partition layout used with UEFI. It describes how the disk is divided.</td></tr>
+<tr><td>GRUB</td><td>Grand Unified Bootloader. It loads the kernel after the firmware hands off.</td></tr>
+</tbody></table>
+<div class="callout"><strong>GPT here is the partition table.</strong> The original notes also expand GPT as ChatGPT and “Generative Pre-trained Transformer.” That is a different use of the same three letters. ChatGPT does not partition a disk. The GPT in this section is the GUID Partition Table.</div>
+<div class="diagram"><strong>Boot path the terms describe</strong>
+<div class="flow"><span class="node">BIOS or UEFI</span><span class="arrow">→</span><span class="node">MBR or GPT</span><span class="arrow">→</span><span class="node">GRUB</span><span class="arrow">→</span><span class="node">Linux kernel</span><span class="arrow">→</span><span class="node">Init</span></div>
+</div>
+
+<h2 id="files">9. Files, viewing and processes</h2>
+<h3>Files and directories</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>ls</code></td><td>Lists files.</td></tr>
+<tr><td><code>ls -l</code></td><td>Long list, with details. The notes write <code>ls - l</code>; the flag is attached, with no space after the dash.</td></tr>
+<tr><td><code>ls -a</code></td><td>Includes hidden files.</td></tr>
+<tr><td><code>cd</code></td><td>Changes directory.</td></tr>
+<tr><td><code>pwd</code></td><td>Prints the working directory.</td></tr>
+<tr><td><code>mkdir</code></td><td>Creates a directory.</td></tr>
+<tr><td><code>rmdir</code></td><td>Removes an empty directory.</td></tr>
+<tr><td><code>rm</code></td><td>Deletes files.</td></tr>
+<tr><td><code>rm -rf</code></td><td>Deletes recursively and without asking.</td></tr>
+<tr><td><code>cp</code></td><td>Copies files and directories.</td></tr>
+<tr><td><code>mv</code></td><td>Moves files and directories, which is also how you rename them.</td></tr>
+<tr><td><code>touch</code></td><td>Creates an empty file, or updates the timestamp if the file already exists.</td></tr>
+</tbody></table>
+<div class="callout"><strong><code>rm -rf</code> does not ask.</strong> It removes the path you give it, including directories and their contents. Check the path before you run it. There is no trash folder behind this command.</div>
+<h3>Viewing and editing</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>cat</code></td><td>Shows the whole file.</td></tr>
+<tr><td><code>less</code></td><td>Shows a large file one page at a time.</td></tr>
+<tr><td><code>head</code></td><td>Shows the first 10 lines.</td></tr>
+<tr><td><code>tail</code></td><td>Shows the last 10 lines.</td></tr>
+<tr><td><code>nano</code></td><td>A simple text editor.</td></tr>
+<tr><td><code>vim</code> or <code>vi</code></td><td>A modal editor. Keystrokes mean different things in insert mode and in command mode.</td></tr>
+</tbody></table>
+<h3>Monitoring</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>top</code></td><td>Live view of CPU and processes.</td></tr>
+<tr><td><code>htop</code></td><td>A clearer <code>top</code>. It may need to be installed first.</td></tr>
+<tr><td><code>df -h</code></td><td>Disk space used and free. <code>-h</code> here means human-readable units.</td></tr>
+<tr><td><code>du -sh &lt;dir&gt;</code></td><td>Size of one directory or file. <code>-s</code> is the summary and <code>-h</code> is human-readable.</td></tr>
+<tr><td><code>free -h</code></td><td>Memory use, in human-readable units.</td></tr>
+<tr><td><code>uptime</code></td><td>How long the system has been up, and the load average.</td></tr>
+<tr><td><code>ps aux</code></td><td>Lists running processes.</td></tr>
+<tr><td><code>kill &lt;pid&gt;</code></td><td>Asks that process to stop. PID is the process ID.</td></tr>
+<tr><td><code>kill -9 &lt;pid&gt;</code></td><td>Forces an unresponsive process to stop. Signal 9 cannot be caught by the process.</td></tr>
+</tbody></table>
+
+<h2 id="admin">10. Networking, packages, disks, logs and users</h2>
+<h3>Networking</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>ping &lt;host&gt;</code></td><td>Checks that a host answers.</td></tr>
+<tr><td><code>ifconfig</code> or <code>ip addr</code></td><td>Shows interfaces and addresses. <code>ip addr</code> is the current command. <code>ifconfig</code> is the older one.</td></tr>
+<tr><td><code>netstat -tulnp</code></td><td>Shows listening TCP and UDP ports, with the process name when you have permission to see it.</td></tr>
+<tr><td><code>ss -tuln</code></td><td>The notes' modern replacement for that <code>netstat</code> view: TCP, UDP, listening, numeric.</td></tr>
+<tr><td><code>curl &lt;url&gt;</code></td><td>Makes an HTTP request or downloads a file.</td></tr>
+<tr><td><code>wget &lt;url&gt;</code></td><td>Downloads a file from the internet.</td></tr>
+</tbody></table>
+<h3>Packages</h3>
+<p>Ubuntu and Debian use APT. The notes' Red Hat and CentOS commands are YUM, and the same subcommands on current Fedora, RHEL and CentOS Stream are DNF.</p>
+<table><thead><tr><th>APT</th><th>YUM or DNF</th><th>Effect</th></tr></thead><tbody>
+<tr><td><code>apt update</code></td><td></td><td>Refreshes the package index. It does not upgrade installed software.</td></tr>
+<tr><td><code>apt upgrade</code></td><td><code>yum update</code> or <code>dnf upgrade</code></td><td>Upgrades installed packages. The notes write <code>yum update</code> for “update all packages.”</td></tr>
+<tr><td><code>apt install</code></td><td><code>yum install</code> or <code>dnf install</code></td><td>Installs a package.</td></tr>
+<tr><td><code>apt remove</code></td><td><code>yum remove</code> or <code>dnf remove</code></td><td>Removes a package.</td></tr>
+</tbody></table>
+<p class="note">On Ubuntu these APT commands are run with <code>sudo</code>. <code>apt update</code> and <code>apt upgrade</code> do different jobs: update the list first, then upgrade.</p>
+<h3>Disks</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>mount /dev/sda1 /mnt</code></td><td>Attaches the filesystem on that device at <code>/mnt</code>.</td></tr>
+<tr><td><code>umount /mnt</code></td><td>Detaches it. The command is <code>umount</code>, with no first n.</td></tr>
+<tr><td><code>lsblk</code></td><td>Lists disks and partitions.</td></tr>
+<tr><td><code>fdisk -l</code></td><td>Shows partition table information.</td></tr>
+<tr><td><code>df -h</code></td><td>Filesystem space.</td></tr>
+<tr><td><code>du -sh</code></td><td>Size of a folder or file.</td></tr>
+</tbody></table>
+<p class="note"><code>mount</code> and <code>fdisk -l</code> need root. The device name <code>/dev/sda1</code> in the notes is an example. <code>lsblk</code> shows the name on the machine in front of you. Do not format or repartition a disk from memory of a sample name.</p>
+<h3>Logs</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>tail -f /var/log/syslog</code></td><td>Follows that log as lines are appended. On some distributions the file is <code>/var/log/messages</code>, or the journal is used instead.</td></tr>
+<tr><td><code>journalctl -xe</code></td><td>systemd's journal. <code>-e</code> jumps to the end and <code>-x</code> adds the extra message explanations. This is not a filter that shows only errors. <code>-p err</code> is the filter for error priority.</td></tr>
+<tr><td><code>grep &lt;pattern&gt; &lt;file&gt;</code></td><td>Searches for text in a file.</td></tr>
+<tr><td><code>grep -r &lt;pattern&gt; &lt;dir&gt;</code></td><td>Searches a directory recursively.</td></tr>
+</tbody></table>
+<h3>Users</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>whoami</code></td><td>Prints the current user.</td></tr>
+<tr><td><code>id</code></td><td>Shows the user ID and groups.</td></tr>
+<tr><td><code>adduser</code></td><td>Creates a user. On Debian and Ubuntu this also asks for a password and home directory.</td></tr>
+<tr><td><code>passwd</code></td><td>Changes a password.</td></tr>
+<tr><td><code>groups</code></td><td>Shows groups for a user.</td></tr>
+<tr><td><code>sudo</code></td><td>Runs a command as root.</td></tr>
+</tbody></table>
+<h3>Scheduled scripts and services</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>crontab -e</code></td><td>Edits your cron jobs.</td></tr>
+<tr><td><code>crontab -l</code></td><td>Lists them.</td></tr>
+<tr><td><code>bash</code></td><td>Runs a shell script.</td></tr>
+<tr><td><code>systemctl status &lt;service&gt;</code></td><td>Shows whether a systemd service is running.</td></tr>
+<tr><td><code>systemctl start</code>, <code>stop</code>, <code>restart</code></td><td>Controls that service. Changing system services needs <code>sudo</code>.</td></tr>
+</tbody></table>
+<h3>Containers and Kubernetes, as listed</h3>
+<p>The notes include a short DevOps set. Docker is covered on its own in <a href="docker.html">Docker for Beginners</a>. These commands do nothing useful until that tool is installed and pointed at a cluster or a running engine.</p>
+<pre><code>docker ps
+docker logs &lt;container&gt;
+docker exec -it &lt;container&gt; bash
+kubectl get pods
+kubectl logs &lt;pod&gt;</code></pre>
+
+<h2 id="tools">11. Flags, text processing, archives and the environment</h2>
+<p>The notes list flags as short abbreviations. The same letter does not mean the same thing on every command. <code>df -h</code> is human-readable, while many other commands use <code>-h</code> for help.</p>
+<table><thead><tr><th>Flag</th><th>Meaning the notes give</th></tr></thead><tbody>
+<tr><td><code>-h</code></td><td>Help. Also human-readable on <code>df</code>, <code>du</code> and <code>free</code>, which is how the notes use it earlier.</td></tr>
+<tr><td><code>-v</code></td><td>Verbose. More detail about what the command is doing.</td></tr>
+<tr><td><code>-r</code></td><td>Recursive. The command walks a directory and its subdirectories.</td></tr>
+<tr><td><code>-f</code></td><td>Force. Ignore the usual warnings and proceed. On <code>tail</code>, <code>-f</code> means follow.</td></tr>
+<tr><td><code>-a</code></td><td>All. Include everything, such as hidden files in <code>ls -a</code>.</td></tr>
+<tr><td><code>-l</code></td><td>Long listing.</td></tr>
+<tr><td><code>-s</code></td><td>Size or summary, as in <code>du -s</code>.</td></tr>
+<tr><td><code>-t</code></td><td>Time. <code>ls -lt</code> sorts by modification time.</td></tr>
+<tr><td><code>-i</code></td><td>Interactive. <code>rm -i</code> asks before each delete.</td></tr>
+<tr><td><code>-c</code></td><td>A format or config switch on some commands. The notes give <code>stat -c '%s'</code>, which prints the size in bytes.</td></tr>
+</tbody></table>
+<h3>Text processing</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>grep -i</code>, <code>-r</code>, <code>-v</code></td><td>Search. <code>-i</code> ignores case, <code>-r</code> is recursive, <code>-v</code> inverts the match and prints lines that do not match.</td></tr>
+<tr><td><code>awk '{print $1}'</code></td><td>Prints the first field of each line.</td></tr>
+<tr><td><code>sed 's/old/new/g'</code></td><td>Replaces text. The trailing <code>g</code> replaces every match on the line, not only the first.</td></tr>
+<tr><td><code>sort -n</code>, <code>sort -r</code></td><td>Sorts lines numerically, or in reverse.</td></tr>
+<tr><td><code>uniq -c</code></td><td>Counts adjacent duplicate lines. Sort the input first if you want duplicates grouped.</td></tr>
+<tr><td><code>cut -d</code>, <code>-f</code></td><td>Extracts columns. <code>-d</code> sets the delimiter and <code>-f</code> selects the field.</td></tr>
+<tr><td><code>tr -d</code>, <code>tr -s</code></td><td>The notes pair <code>d</code> with delete and <code>s</code> with substitute. <code>tr -d</code> deletes characters. <code>tr -s</code> squeezes repeated characters. Substitution of one set for another is <code>tr SET1 SET2</code>.</td></tr>
+<tr><td><code>wc -l</code>, <code>wc -w</code></td><td>Counts lines or words. Without a flag, <code>wc</code> also counts bytes.</td></tr>
+</tbody></table>
+<h3>Archives</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>tar -cvf archive.tar files</code></td><td>Creates an archive. <code>c</code> create, <code>v</code> verbose, <code>f</code> the archive name.</td></tr>
+<tr><td><code>tar -xvf archive.tar</code></td><td>Extracts it. <code>x</code> is extract.</td></tr>
+<tr><td><code>gzip file</code></td><td>Compresses a file. The notes use <code>gzip -d</code> for decompress.</td></tr>
+<tr><td><code>gzip -d file.gz</code></td><td>Decompresses that gzip file.</td></tr>
+<tr><td><code>zip -r archive.zip dir</code></td><td>Creates a zip file, recursively.</td></tr>
+<tr><td><code>unzip archive.zip</code></td><td>Extracts a zip file.</td></tr>
+</tbody></table>
+<h3>Environment and history</h3>
+<table><thead><tr><th>Command</th><th>Purpose in the notes</th></tr></thead><tbody>
+<tr><td><code>env</code></td><td>Prints the environment variables.</td></tr>
+<tr><td><code>alias ll='ls -lah'</code></td><td>Makes <code>ll</code> a shortcut for a long listing of all files, human-readable.</td></tr>
+<tr><td><code>echo -e</code></td><td>Prints a message and interprets backslash escapes.</td></tr>
+<tr><td><code>read -p</code></td><td>Reads user input with a prompt.</td></tr>
+<tr><td><code>export NAME=value</code></td><td>Sets a variable for this shell and the commands it starts.</td></tr>
+<tr><td><code>source file</code></td><td>Runs the file in the current shell, so assignments and aliases stay.</td></tr>
+<tr><td><code>bash -x script.sh</code></td><td>Runs the script with a trace of each command.</td></tr>
+<tr><td><code>history</code></td><td>Shows command history.</td></tr>
+<tr><td><code>!n</code></td><td>Runs history entry <code>n</code> again. The notes write this next to <code>history</code>.</td></tr>
+</tbody></table>
+<div class="callout"><strong>No spaces around <code>=</code> in an alias.</strong> The original notes write <code>alias 'll = ls -lah'</code>. Bash treats that as a broken assignment, the same rule as <code>name="Bro"</code> earlier. The working form is <code>alias ll='ls -lah'</code>.</div>
+
+<h2 id="install">12. Installation paths in the notes</h2>
+<p>The last page points at three official ways to get a Linux environment. The commands and installers below come from those guides. Read the linked page before you change a disk.</p>
+<h3>Windows Subsystem for Linux</h3>
+<p>Microsoft's guide: <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank" rel="noopener">Install WSL</a>. The notes' quick setup is an administrator PowerShell or Command Prompt:</p>
+<pre><code>wsl --install</code></pre>
+<p>That installs Ubuntu by default. Restart when Windows asks you to.</p>
+<h3>Linux as the only system</h3>
+<p>Ubuntu's desktop guide: <a href="https://ubuntu.com/tutorials/install-ubuntu-desktop" target="_blank" rel="noopener">Install Ubuntu desktop</a>. The notes' outline is: download the ISO, write it to a USB with <a href="https://rufus.ie/" target="_blank" rel="noopener">Rufus</a>, boot that USB from the firmware boot menu, and choose the install option.</p>
+<div class="callout"><strong>“Erase disk and install Ubuntu” removes what is on that disk.</strong> Use it when the machine should boot only Ubuntu. If Windows has to remain, use the dual-boot path instead.</div>
+<h3>Dual boot with Windows</h3>
+<p>The notes link to <code>help.ubuntu.com/community/WindowsDualBoot</code>. That community page no longer resolves. The current desktop tutorial covers the same choice: <a href="https://ubuntu.com/desktop/docs/en/latest/tutorial/install-ubuntu-desktop/" target="_blank" rel="noopener">Install Ubuntu desktop</a>. The notes' outline is: shrink the Windows partition in Disk Management so there is unallocated space, boot the USB installer, and choose “Install Ubuntu alongside Windows.” If BitLocker is on, the installer cannot see the Windows partitions until it is turned off. Ubuntu documents that case in <a href="https://ubuntu.com/desktop/docs/en/latest/reference/bitlocker-during-ubuntu-installation/" target="_blank" rel="noopener">BitLocker during Ubuntu installation</a>.</p>
+<h3>References</h3>
+<ul>
+<li><a href="https://man7.org/linux/man-pages/man7/hier.7.html" target="_blank" rel="noopener">Filesystem hierarchy, <code>hier(7)</code></a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank" rel="noopener">Microsoft WSL install guide</a></li>
+<li><a href="https://ubuntu.com/tutorials/install-ubuntu-desktop" target="_blank" rel="noopener">Ubuntu desktop installation</a></li>
+<li><a href="https://ubuntu.com/desktop/docs/en/latest/tutorial/install-ubuntu-desktop/" target="_blank" rel="noopener">Current Ubuntu desktop install tutorial</a>, including install alongside Windows</li>
+</ul>
+<p class="note">Original material: Linux notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
