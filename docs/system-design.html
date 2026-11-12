@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="System design notes by Mubendiran K: load balancing, feeds, sharding, cache-aside, CAP, and core CS.">
+<title>System Design | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+.diagram{border:1px solid var(--line);background:#f8fafc;border-radius:12px;padding:18px;margin:18px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:10px 0}.node{border:1px solid #9bbcf3;background:#eff6ff;border-radius:8px;padding:9px 13px;font-weight:650}.arrow{color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="./">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Technical notes · System design</div>
+<h1>System Design</h1>
+<p class="sub">A structured, readable version of my system design notes. This article follows the eight parts in the original 10-page notes, from load balancers and feeds through sharding, CAP, and a few core CS ideas.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 10-page source notes · <a href="https://drive.google.com/file/d/1IskkJxbrGQwIeUEcoWw3GAjL9Hzpc0Vm/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2403742?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#blocks">1. Building blocks</a><a href="#scaling">2. Scaling, protection and feeds</a><a href="#media">3. Discovery, media and files</a><a href="#location">4. Location, chat and pipelines</a><a href="#sharding">5. Sharding</a><a href="#cache">6. Cache-aside and denormalization</a><a href="#cap">7. CAP</a><a href="#fundamentals">8. Scheduling, memory and triggers</a><a href="#references">9. References</a>
+</div></nav>
+<article>
+<p>The notes are a map of pieces that show up in the same products over and over: a URL shortener, a chat app, Instagram, YouTube, Netflix, Uber and Google Drive. Each row below is the definition in the notes, plus the correction where a label is easy to mix up.</p>
+
+<h2 id="blocks">1. Building blocks</h2>
+<table><thead><tr><th>Piece</th><th>What the notes say it does</th><th>Where they use it</th></tr></thead><tbody>
+<tr><td>Load balancer</td><td>Spreads traffic across servers so one machine does not take the whole load.</td><td>Almost every system.</td></tr>
+<tr><td>Cache (Redis)</td><td>Keeps frequently read data in memory, so the database does less work and the response is faster.</td><td>URL shortener, Pastebin, Instagram, YouTube, Netflix.</td></tr>
+<tr><td>Database</td><td>Stores the structured records: users, metadata, messages.</td><td>All of the systems in the notes.</td></tr>
+<tr><td>Object storage</td><td>Stores the large files. The database keeps the metadata, not the bytes of the video or the document.</td><td>Pastebin, Instagram, YouTube, Google Drive, Netflix.</td></tr>
+<tr><td>Message queue</td><td>Runs work later, and lets one service finish without waiting for the next.</td><td>Notifications, YouTube, Uber, Google Drive, Netflix.</td></tr>
+<tr><td>Worker</td><td>Takes jobs off that queue and does them in the background.</td><td>Notifications, video transcoding, file sync.</td></tr>
+<tr><td>WebSockets</td><td>A connection that stays open so both sides can send. The <a href="backend-ai.html#frontend">backend notes</a> cover the same idea against ordinary HTTP.</td><td>Chat, and Uber's live location.</td></tr>
+</tbody></table>
+<p>Redis is the cache the notes name. It is not the only one. The pattern is “memory in front of the database.” The application still has to decide when a cached value is too old. That shows up again in the cache-aside section.</p>
+
+<h2 id="scaling">2. Scaling, protection and feeds</h2>
+<table><thead><tr><th>Piece</th><th>What the notes say it does</th><th>Where they use it</th></tr></thead><tbody>
+<tr><td>CDN</td><td>Serves content from a server near the user, which cuts latency.</td><td>Instagram, YouTube, Google Drive, Netflix.</td></tr>
+<tr><td>Sharding</td><td>Splits a large database into smaller parts so it can grow. Part 5 is the row split versus the column split.</td><td>URL shortener, chat, Instagram.</td></tr>
+<tr><td>Replication</td><td>Keeps copies on more than one server, for availability and for surviving a failed machine.</td><td>Almost every production system in the notes.</td></tr>
+<tr><td>Rate limiting</td><td>Caps how many requests a client can make, so one caller cannot abuse the API.</td><td>Login, public APIs, chat.</td></tr>
+<tr><td>Unique IDs</td><td>Gives every record an identifier that does not collide. The notes' examples are Base62 and a distributed ID generator.</td><td>URL shortener, chat, YouTube, Google Drive.</td></tr>
+<tr><td>Feed generation</td><td>Builds the list of posts a person sees. The two strategies are fan-out on write and fan-out on read.</td><td>Instagram, Facebook, LinkedIn.</td></tr>
+</tbody></table>
+<p>A replica can be updated with the write, or after it. Waiting for the copy makes the write slower and can stall when the network between the copies breaks. Updating the copy afterwards keeps the write fast, and a reader can briefly see the older value. That is the same trade the CAP section names.</p>
+<div class="callout"><strong>Base62 writes an ID. It does not invent one.</strong> The notes list “Base62” next to “distributed ID generators,” as if both create uniqueness. Base62 is an alphabet of 62 symbols, digits plus upper and lower case, used so a big number fits in a short URL. The uniqueness comes from the generator: a counter, a UUID, or a distributed scheme such as Snowflake that packs time, a worker number and a sequence into one value. Encoding that value as Base62 does not add new uniqueness. Two generators that emit the same number still collide after encoding.</div>
+<h3>Fan-out on write and fan-out on read</h3>
+<table><thead><tr><th></th><th>When the feed is built</th><th>What gets slower</th></tr></thead><tbody>
+<tr><td>Fan-out on write (push)</td><td>The moment the post is created, a copy is delivered to each follower's inbox.</td><td>The write. A celebrity with millions of followers turns one post into millions of inbox rows. The read is a lookup.</td></tr>
+<tr><td>Fan-out on read (pull)</td><td>The post is stored once. The feed is assembled when someone opens it.</td><td>The read. The write stays cheap.</td></tr>
+</tbody></table>
+<p class="note">The notes stop at those two. A production feed often mixes them: push for ordinary accounts, pull for accounts whose follower list would make the write too heavy. That mix is not a third row in the PDF.</p>
+
+<h2 id="media">3. Discovery, media and file sync</h2>
+<table><thead><tr><th>Piece</th><th>What the notes say it does</th><th>Where they use it</th></tr></thead><tbody>
+<tr><td>Recommendations</td><td>Suggests content from how people have behaved.</td><td>Instagram, YouTube, Netflix.</td></tr>
+<tr><td>Search index</td><td>Answers a search without scanning the database row by row.</td><td>Instagram, YouTube, Netflix.</td></tr>
+<tr><td>Transcoding</td><td>Turns one video into several resolutions.</td><td>YouTube, Netflix.</td></tr>
+<tr><td>Adaptive bitrate</td><td>Switches quality as the connection gets faster or slower.</td><td>YouTube, Netflix.</td></tr>
+<tr><td>Chunked upload</td><td>Sends a large file in parts, so an interrupted upload can resume.</td><td>YouTube, Google Drive.</td></tr>
+<tr><td>File sync</td><td>Keeps the same file current on each device.</td><td>Drive.</td></tr>
+<tr><td>Version history</td><td>Keeps older copies of a file.</td><td>Drive.</td></tr>
+<tr><td>Conflict resolution</td><td>Decides what to keep when two people edit at the same time.</td><td>Drive.</td></tr>
+</tbody></table>
+<p>The search index the notes are pointing at is an inverted index: words point at the documents that contain them, so the query does not walk every row. Transcoding is what produces the ladder of files. Adaptive bitrate is the player choosing a rung of that ladder from the current bandwidth and buffer, rather than the server guessing once. If two edits conflict, the simple rule is last write wins, and one edit disappears. A merge keeps both. The notes name the problem and not the rule.</p>
+
+<h2 id="location">4. Location, chat and pipelines</h2>
+<table><thead><tr><th>Piece</th><th>What the notes say it does</th><th>Where they use it</th></tr></thead><tbody>
+<tr><td>Geospatial index</td><td>Finds nearby objects without checking every location.</td><td>Uber. The Uber posts they cite use H3, which groups the map into cells.</td></tr>
+<tr><td>ETA</td><td>Estimates travel time from the map and from traffic.</td><td>Uber.</td></tr>
+<tr><td>Surge pricing</td><td>Moves the price with supply and demand.</td><td>Uber.</td></tr>
+<tr><td>Presence</td><td>Records who is online and who is offline.</td><td>Chat.</td></tr>
+<tr><td>Offline storage</td><td>Holds data on the device until the network comes back.</td><td>Chat, Drive.</td></tr>
+<tr><td>Pagination</td><td>Returns a batch instead of the whole list. The cost of a large offset is in the <a href="backend-ai.html#lists">backend notes</a>.</td><td>Instagram, YouTube, Netflix.</td></tr>
+<tr><td>Retry</td><td>Tries a failed operation again after a delay.</td><td>Notifications.</td></tr>
+<tr><td>Dead letter queue</td><td>Keeps messages that keep failing, instead of retrying them forever.</td><td>Notifications.</td></tr>
+<tr><td>Analytics pipeline</td><td>Collects activity so the product can measure it and feed the recommender.</td><td>YouTube, Netflix.</td></tr>
+</tbody></table>
+<div class="callout"><strong>A retry without a limit makes the outage worse.</strong> The notes say to retry after a delay. That is safe only when repeating the operation does not create a second charge, a second email, or a second row. Wait longer after each failure, stop after a fixed number of tries, and put the message on the dead letter queue. The queue is the notes' place for work that has already failed repeatedly. Retrying immediately, with no cap, turns one slow dependency into a pile of identical requests.</div>
+<p class="note">Presence is usually a heartbeat. The client refreshes a short-lived “online” flag. When the refresh stops, the flag expires and the user looks offline. That mechanism is not drawn in the notes.</p>
+
+<h2 id="sharding">5. Horizontal and vertical sharding</h2>
+<p>Sharding, in the notes, means splitting one large database into smaller databases so the data is spread across servers. The aim is more data, faster queries, and no single database carrying the whole load.</p>
+<table><thead><tr><th></th><th>What is split</th><th>What stays the same</th><th>Why the notes do it</th></tr></thead><tbody>
+<tr><td>Horizontal</td><td>Rows. Different servers hold different records.</td><td>The columns. Each shard has the same shape of table.</td><td>The data no longer fits on one machine. Their example is Instagram.</td></tr>
+<tr><td>Vertical</td><td>Columns. Different tables, or different databases, hold different fields of the same logical record.</td><td>The row identity. Profile details are their example: the wide set of fields is pulled apart.</td><td>A narrower table, so a query does not drag columns it does not need. They call this an optimization.</td></tr>
+</tbody></table>
+<div class="callout"><strong>Vertical sharding is not a bigger machine.</strong> The notes' vertical split is columns. Vertical scaling is a different phrase: a larger CPU, more RAM, a bigger disk, still one machine. Horizontal scaling is more machines. Horizontal sharding is one way to scale horizontally. Buying a larger server does not, by itself, split a table.</div>
+<p class="note">The notes say “same column, different rows.” Read that as the same columns. A shard that dropped a column would no longer be a horizontal split of that table.</p>
+
+<h2 id="cache">6. Cache-aside and denormalization</h2>
+<p>Cache-aside is the notes' read path. The application, not the database, talks to the cache.</p>
+<div class="diagram"><strong>Cache-aside, the path in the notes</strong>
+<div class="flow"><span class="node">Ask Redis</span><span class="arrow">→</span><span class="node">Hit: return it</span></div>
+<div class="flow"><span class="node">Miss</span><span class="arrow">→</span><span class="node">Read SQL</span><span class="arrow">→</span><span class="node">Write Redis</span><span class="arrow">→</span><span class="node">Return</span></div>
+</div>
+<div class="callout"><strong>A value with no expiry is a stale answer that looks fast.</strong> The notes' path fills Redis on a miss and then trusts it. After an update, that copy is wrong until something removes it or it expires. Set a time to live, or delete the key when the row changes. On a popular miss, many requests can all run the SQL at once. A short lock, or a single request that fills the cache while the others wait, is the usual guard. Neither guard is in the PDF.</div>
+<p>Denormalization is the notes' choice to store a copy of data so a read does not join. Reads and analytics get simpler. The cost, which the notes do not spell out, is on the write: every copy has to change, or the copies disagree. Normalization, and why the join existed in the first place, is in the <a href="sql.html">SQL notes</a>.</p>
+
+<h2 id="cap">7. CAP</h2>
+<p>The three letters in the notes are consistency, availability and partition tolerance. Their slogan is that a distributed system can guarantee only two of the three.</p>
+<table><thead><tr><th>Letter</th><th>Definition in the notes</th></tr></thead><tbody>
+<tr><td>Consistency</td><td>Every node shows the same data. A write of <code>x = 10</code> is what every node returns immediately afterwards.</td></tr>
+<tr><td>Availability</td><td>The system answers. The notes say the user still gets a response when some nodes have failed.</td></tr>
+<tr><td>Partition tolerance</td><td>The system keeps operating when the network between servers fails.</td></tr>
+</tbody></table>
+<table><thead><tr><th>Label</th><th>What is kept</th><th>What is given up</th><th>Example in the notes</th></tr></thead><tbody>
+<tr><td>CP</td><td>Consistency and partition tolerance.</td><td>Availability. During a network split, some requests are rejected rather than answered with a stale or divergent value.</td><td>ZooKeeper.</td></tr>
+<tr><td>AP</td><td>Availability and partition tolerance.</td><td>Consistency. A reader can see an older value. The notes call this “eventually consistency.” The adjective is eventually consistent.</td><td>DynamoDB, in the mode that serves eventually consistent reads.</td></tr>
+<tr><td>CA</td><td>Consistency and availability.</td><td>Partition tolerance. The notes say this is only possible when a partition is not considered, and that it is mostly theoretical for a distributed system.</td><td>A traditional single-node SQL database.</td></tr>
+</tbody></table>
+<div class="callout"><strong>During a partition, the choice is consistency or availability.</strong> The “two out of three” line is the slogan in the notes. A system that runs on more than one machine will have network failures, so partition tolerance is not a feature you opt out of. When the network splits, a CP system refuses some requests so it does not serve two different values. An AP system answers anyway, and the copies catch up later. CA describes a system that assumes the network never splits. A single database server matches the notes' example because there is no network between replicas. If that one server is down, nobody gets an answer, so it has not escaped failure. It has escaped the distributed choice.</div>
+<p>CAP consistency means a read returns the most recent write, or an error. It does not mean “the nodes agree about an old value.” Availability, in the theorem, means a node that has not crashed still responds, including while it cannot reach the others. A node that has crashed is not required to answer.</p>
+
+<h2 id="fundamentals">8. Round robin, thrashing, triggers and interfaces</h2>
+<p>The last part leaves system design for four ideas the notes want next to it. Scheduling and paging are developed in the <a href="os.html">operating system notes</a>. The Python side of an interface is in the <a href="python.html#abstract">Python notes</a>.</p>
+<h3>Round robin</h3>
+<p>Each process gets a fixed slice of CPU, the time quantum. If it is still running when the slice ends, the scheduler stops it, puts it at the back of the ready queue, and runs the next process. The notes' quantum is 2 ms, with three bursts: P1 is 5 ms, P2 is 3 ms, P3 is 4 ms. Assuming they are all ready at the start, in that order, the slices are:</p>
+<div class="diagram"><strong>Those three bursts, quantum 2 ms</strong>
+<div class="flow"><span class="node">P1 · 2</span><span class="arrow">→</span><span class="node">P2 · 2</span><span class="arrow">→</span><span class="node">P3 · 2</span><span class="arrow">→</span><span class="node">P1 · 2</span><span class="arrow">→</span><span class="node">P2 · 1</span><span class="arrow">→</span><span class="node">P3 · 2</span><span class="arrow">→</span><span class="node">P1 · 1</span></div>
+</div>
+<p class="note">P2 finishes at 9 ms, P3 at 11 ms, P1 at 12 ms. The diagram is the schedule those numbers produce. The PDF gives the numbers and not the timeline.</p>
+<table><thead><tr><th>What the notes list as an advantage</th><th>What they list as a cost</th></tr></thead><tbody>
+<tr><td>Fair. No starvation. A short quantum keeps response time low, because a new process does not wait behind a long one.</td><td>A quantum that is too small spends the CPU on context switches. A quantum that is too large stops preempting, and the schedule behaves like first come, first served.</td></tr>
+</tbody></table>
+<h3>Thrashing</h3>
+<p>Thrashing is the notes' name for the state where the CPU spends more time moving pages between RAM and disk than running the processes. Their picture is a machine with 4 GB of RAM and an application that wants 8 GB, so the operating system keeps swapping pages in and out. The symptoms they give are a very slow system, high disk use, and low CPU use.</p>
+<div class="callout"><strong>The machine has not run out of RAM entirely.</strong> The notes' bullet says “no physical memory.” There is memory. The working set does not fit in it, so a page is evicted and then needed again immediately. The CPU waits on the disk, which is why utilization looks low while the system feels stuck. A page fault itself is not thrashing. Thrashing is that fault happening so often that useful work stops. The <a href="os.html">operating system notes</a> separate a fault from “RAM is full.”</div>
+<h3>Triggers</h3>
+<p>A trigger is a database object that runs when a row is inserted, updated or deleted. The notes list those three events. The trigger runs as part of the statement that woke it. If the trigger fails, the original write can be rolled back with it. That hidden work is why a trigger is easy to forget while debugging a simple insert. The language around tables and events is in the <a href="sql.html">SQL notes</a>.</p>
+<h3>Package and interface</h3>
+<table><thead><tr><th></th><th>Package</th><th>Interface</th></tr></thead><tbody>
+<tr><td>What it is</td><td>A collection of modules, used to organize code.</td><td>A list of methods a class is supposed to implement. It defines behaviour, not the storage.</td></tr>
+<tr><td>In Python</td><td>A package is a module that contains other modules. It exists directly.</td><td>There is no <code>interface</code> keyword. The notes say it is “not directly in Python.” An abstract base class is the construct that plays this role, which is the contract in the Python notes.</td></tr>
+</tbody></table>
+
+<h2 id="references">9. References in the notes</h2>
+<ul>
+<li><a href="https://github.com/donnemartin/system-design-primer" target="_blank" rel="noopener">System Design Primer</a>, Donne Martin's notes. The PDF points here for load balancers, caching, sharding, replication, CAP and queues.</li>
+<li><a href="https://blog.bytebytego.com/" target="_blank" rel="noopener">ByteByteGo</a>. The notes use it for rate limiting, unique IDs, feed fan-out, transcoding and adaptive bitrate. The blog is a visual essay series, not a single page on each of those.</li>
+<li><a href="https://highscalability.com/" target="_blank" rel="noopener">High Scalability</a>. The notes cite the <code>http://</code> address, which redirects here, for case studies of the products named throughout the PDF.</li>
+<li><a href="https://netflixtechblog.com/" target="_blank" rel="noopener">Netflix TechBlog</a>. The notes point here for Open Connect, adaptive bitrate, transcoding and analytics. The index is the whole engineering blog.</li>
+<li><a href="https://www.uber.com/us/en/blog/engineering/" target="_blank" rel="noopener">Uber Engineering</a>. The notes cite <code>/blog/engineering/</code> for H3, ETA, surge pricing and live location. That path without a locale answers 406. This is the engineering index that loads.</li>
+<li><a href="https://engineering.fb.com/" target="_blank" rel="noopener">Meta engineering</a>. The notes point here for fan-out, Memcached and Redis, and search indexing. The index is broader than the feed articles.</li>
+<li><a href="https://aws.amazon.com/blogs/architecture/" target="_blank" rel="noopener">AWS Architecture Blog</a>. The notes use it for cache-aside, dead letter queues, retries, object storage and DynamoDB's eventual consistency. Those topics are spread across posts, not one article.</li>
+<li><a href="https://www.cloudflare.com/learning/" target="_blank" rel="noopener">Cloudflare Learning Center</a>. The notes point here for CDNs, load balancing, WebSockets and rate limiting. It is a set of primers, not one page.</li>
+</ul>
+<p class="note">Original material: System Design notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="./">Notes of Mube</a></div></footer>
+</body></html>
