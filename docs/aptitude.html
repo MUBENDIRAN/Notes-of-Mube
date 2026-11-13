@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Aptitude and placement notes by Mubendiran K: number systems, percentages, profit and loss, interest, time and work, speed, probability, and reasoning.">
+<title>Aptitude &amp; Placement | Notes of Mube</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#64748b;--line:#e2e8f0;--blue:#2457c5;--soft:#f5f8fc;--code:#101827}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#fff;font:16px/1.75 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#eff6ff,#f8fafc);border-bottom:1px solid var(--line);padding:26px 20px 38px}
+.wrap{width:min(100% - 36px,1120px);margin:auto}.top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.top a, a{color:var(--blue);text-decoration:none}.top a:hover,a:hover{text-decoration:underline}
+.kicker{color:var(--blue);font-size:.78rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;margin-top:30px}
+h1{font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;letter-spacing:-.04em;margin:8px 0 12px} .sub{color:var(--muted);max-width:720px}
+.meta{font-size:.88rem;color:var(--muted);margin-top:18px}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:44px;padding:36px 0 70px}
+nav{position:sticky;top:20px;align-self:start;border:1px solid var(--line);border-radius:12px;padding:18px;background:#fff;max-height:calc(100vh - 40px);overflow:auto}
+nav strong{display:block;margin-bottom:10px}nav a{display:block;padding:5px 0;font-size:.9rem;color:#475569}
+@media(max-width:700px){table{display:block;overflow-x:auto;white-space:normal}}
+article{min-width:0}h2{font-size:1.65rem;line-height:1.25;margin:42px 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}h3{font-size:1.15rem;margin:26px 0 8px}
+p{margin:10px 0}li{margin:6px 0}.callout{background:var(--soft);border-left:4px solid var(--blue);padding:14px 17px;border-radius:0 9px 9px 0;margin:18px 0}
+code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#eef2f7;padding:2px 5px;border-radius:5px;font-size:.92em}
+pre{background:var(--code);color:#e5edf8;padding:16px;border-radius:10px;overflow:auto;line-height:1.6}pre code{background:none;padding:0;color:inherit}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.94rem}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+.note{font-size:.9rem;color:var(--muted)}.source-note{background:#fff7ed;border-left:4px solid #ea8a21;padding:13px 16px;border-radius:0 8px 8px 0;margin:18px 0}
+footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:.9rem}
+@media(max-width:800px){.layout{grid-template-columns:1fr;gap:20px}nav{position:static;max-height:none}nav div{columns:2}}
+</style></head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="index.html">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<div class="kicker">Placement notes · Aptitude</div>
+<h1>Aptitude &amp; Placement</h1>
+<p class="sub">A structured, readable version of my aptitude and placement notes. One article, in the same shape as the other guides: formulas first, then the worked cases from the original 12-page notes.</p>
+<div class="meta">By <strong>Mubendiran K</strong> · 12-page source notes · <a href="https://drive.google.com/file/d/1Ii9JUhf7OYTN_aLeAUNIY0XQaXxMj8X0/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></div>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2406189?utm_source=public_profile&amp;utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav aria-label="Table of contents"><strong>On this page</strong><div>
+<a href="#numbers">1. Number system</a>
+<a href="#squares">2. Squares and cubes</a>
+<a href="#percent">3. Percentages and algebra</a>
+<a href="#profit">4. Profit and loss</a>
+<a href="#ratio">5. Ratio, averages, mixtures</a>
+<a href="#interest">6. Simple and compound interest</a>
+<a href="#work">7. Time, work, and mensuration</a>
+<a href="#speed">8. Speed, trains, and clocks</a>
+<a href="#probability">9. Counting and probability</a>
+<a href="#venn">10. Venn diagrams and data</a>
+<a href="#reasoning">11. Reasoning</a>
+<a href="#links">12. Practice links</a>
+</div></nav>
+<article>
+<p>These notes are a placement sheet: the identities worth memorising, the shortcuts that show up in timed tests, and a worked case for each idea. Percentages, profit and loss, time and work, and time-speed-distance carry most of the paper. The later sections are the reasoning patterns the same tests attach to the arithmetic.</p>
+
+<h2 id="numbers">1. Number system, exponents, and foundations</h2>
+<h3>Parity and the small primes</h3>
+<p>Even ± even is even. Even ± odd is odd. Odd ± odd is even. The primes below 20 are 2, 3, 5, 7, 11, 13, 17, and 19. Two is the only even prime.</p>
+<table><thead><tr><th>Sum</th><th>Formula</th></tr></thead><tbody>
+<tr><td>First n natural numbers</td><td>n(n + 1) / 2</td></tr>
+<tr><td>Squares of the first n numbers</td><td>n(n + 1)(2n + 1) / 6</td></tr>
+<tr><td>Cubes of the first n numbers</td><td>[n(n + 1) / 2]²</td></tr>
+</tbody></table>
+<p>For two numbers, product = HCF × LCM. The notes find the HCF and LCM by dividing by primes.</p>
+<h3>Powers and the last digit</h3>
+<p>a⁰ = 1, and a⁻ⁿ = 1 / aⁿ. Last-digit questions only need the cycle of the units digit. Divide the exponent by the cycle length and use the remainder. A remainder of 0 means the last entry in the cycle.</p>
+<table><thead><tr><th>Cycle length</th><th>Units digit and the repeating pattern</th></tr></thead><tbody>
+<tr><td>4</td><td>2 → 2, 4, 8, 6 &nbsp;·&nbsp; 3 → 3, 9, 7, 1 &nbsp;·&nbsp; 7 → 7, 9, 3, 1 &nbsp;·&nbsp; 8 → 8, 4, 2, 6</td></tr>
+<tr><td>2</td><td>4 → 4, 6 &nbsp;·&nbsp; 9 → 9, 1</td></tr>
+<tr><td>1</td><td>0, 1, 5, and 6 never change</td></tr>
+</tbody></table>
+<ul>
+<li>Last digit of 7²⁰². 202 ÷ 4 leaves remainder 2, so the second entry of 7, 9, 3, 1. The last digit is 9.</li>
+<li>Last digit of 9⁹⁹. 99 ÷ 2 leaves remainder 1, so the first entry of 9, 1. The last digit is 9.</li>
+<li>Last digit of 7¹⁰³ × 6²⁵ × 8⁴⁴. 103 leaves remainder 3, so 7’s cycle gives 3. 6 stays 6. 44 is divisible by 4, so 8’s cycle gives its fourth entry, 6. 3 × 6 × 6 = 108, so the last digit is 8.</li>
+<li>2⁵ × 2⁷ ÷ 2³ = 2¹² ÷ 2³ = 2⁹ = 512. Same base: add exponents to multiply, subtract to divide.</li>
+</ul>
+<h3>Squares and cubes that tests assume you know</h3>
+<table><thead><tr><th>Number</th><th>Value</th><th>Number</th><th>Value</th></tr></thead><tbody>
+<tr><td>11²</td><td>121</td><td>15²</td><td>225</td></tr>
+<tr><td>12²</td><td>144</td><td>16²</td><td>256</td></tr>
+<tr><td>13²</td><td>169</td><td>7³</td><td>343</td></tr>
+<tr><td>14²</td><td>196</td><td>8³</td><td>512</td></tr>
+<tr><td>9³</td><td>729</td><td>11³</td><td>1331</td></tr>
+<tr><td>49²</td><td>2401</td><td>64² = 16³</td><td>4096</td></tr>
+</tbody></table>
+<div class="callout"><strong>Remember:</strong> last digit from the cycle, and product = HCF × LCM. A remainder of 0 is the end of the cycle, not the first entry.</div>
+
+<h2 id="squares">2. Squares, cubes, and speed tricks</h2>
+<h3>Squares from 11 to 30</h3>
+<table><thead><tr><th>n</th><th>n²</th><th>n</th><th>n²</th><th>n</th><th>n²</th><th>n</th><th>n²</th></tr></thead><tbody>
+<tr><td>11</td><td>121</td><td>16</td><td>256</td><td>21</td><td>441</td><td>26</td><td>676</td></tr>
+<tr><td>12</td><td>144</td><td>17</td><td>289</td><td>22</td><td>484</td><td>27</td><td>729</td></tr>
+<tr><td>13</td><td>169</td><td>18</td><td>324</td><td>23</td><td>529</td><td>28</td><td>784</td></tr>
+<tr><td>14</td><td>196</td><td>19</td><td>361</td><td>24</td><td>576</td><td>29</td><td>841</td></tr>
+<tr><td>15</td><td>225</td><td>20</td><td>400</td><td>25</td><td>625</td><td>30</td><td>900</td></tr>
+</tbody></table>
+<h3>Larger squares</h3>
+<table><thead><tr><th>n</th><th>n²</th><th>n</th><th>n²</th><th>n</th><th>n²</th><th>n</th><th>n²</th></tr></thead><tbody>
+<tr><td>35</td><td>1225</td><td>50</td><td>2500</td><td>65</td><td>4225</td><td>80</td><td>6400</td></tr>
+<tr><td>40</td><td>1600</td><td>55</td><td>3025</td><td>70</td><td>4900</td><td>90</td><td>8100</td></tr>
+<tr><td>45</td><td>2025</td><td>60</td><td>3600</td><td>75</td><td>5625</td><td>100</td><td>10000</td></tr>
+</tbody></table>
+<h3>Cubes from 1 to 20</h3>
+<table><thead><tr><th>n</th><th>n³</th><th>n</th><th>n³</th><th>n</th><th>n³</th><th>n</th><th>n³</th></tr></thead><tbody>
+<tr><td>1</td><td>1</td><td>6</td><td>216</td><td>11</td><td>1331</td><td>16</td><td>4096</td></tr>
+<tr><td>2</td><td>8</td><td>7</td><td>343</td><td>12</td><td>1728</td><td>17</td><td>4913</td></tr>
+<tr><td>3</td><td>27</td><td>8</td><td>512</td><td>13</td><td>2197</td><td>18</td><td>5832</td></tr>
+<tr><td>4</td><td>64</td><td>9</td><td>729</td><td>14</td><td>2744</td><td>19</td><td>6859</td></tr>
+<tr><td>5</td><td>125</td><td>10</td><td>1000</td><td>15</td><td>3375</td><td>20</td><td>8000</td></tr>
+</tbody></table>
+<h3>Near 100, and three multiplications</h3>
+<p>(100 + x)² is the number (100 + 2x), with x² written in the last two digits. (100 − x)² uses (100 − 2x) the same way. 98² is (100 − 4) followed by 04, which is 9604.</p>
+<p>The notes split a cube near 100 into the binomial pieces (100 ± 3x), 3x², and x³. Those are parts of the expansion, and carries have to be applied. They are not three blocks you paste. 102³ = 1,000,000 + 3×10,000×2 + 3×100×4 + 8 = 1,061,208.</p>
+<table><thead><tr><th>Trick</th><th>How</th><th>Example from the notes</th></tr></thead><tbody>
+<tr><td>× 11</td><td>Split the digits and put their sum between them. Carry if the sum is 10 or more.</td><td>53 × 11 = 5, (5+3), 3 = 583</td></tr>
+<tr><td>× 9</td><td>Number × 10, then subtract the number.</td><td>68 × 9 = 680 − 68 = 612</td></tr>
+<tr><td>× 99</td><td>Number × 100, then subtract the number.</td><td>87 × 99 = 8700 − 87 = 8613</td></tr>
+</tbody></table>
+
+<h2 id="percent">3. Percentages and algebra</h2>
+<table><thead><tr><th>Fraction</th><th>%</th><th>Fraction</th><th>%</th><th>Fraction</th><th>%</th></tr></thead><tbody>
+<tr><td>1/2</td><td>50</td><td>1/6</td><td>16.67</td><td>1/25</td><td>4</td></tr>
+<tr><td>1/3</td><td>33.33</td><td>1/8</td><td>12.5</td><td>1/40</td><td>2.5</td></tr>
+<tr><td>1/4</td><td>25</td><td>1/10</td><td>10</td><td>1/50</td><td>2</td></tr>
+<tr><td>1/5</td><td>20</td><td>1/20</td><td>5</td><td>1/100</td><td>1</td></tr>
+</tbody></table>
+<ul>
+<li>Percentage = (part / whole) × 100. Increase and decrease use the original value in the denominator, not the new one.</li>
+<li>Up x% and then down x% is not a wash. The net change is a loss of x² / 100 percent. 20% up and 20% down is a 4% loss.</li>
+<li>Two successive increases of a% and b% give a net of a + b + (a × b) / 100. 10% then 20% is 32%. 20% then 30% is 56%.</li>
+</ul>
+<h3>Linear equations from the notes</h3>
+<p>The source jumps from example 7 to example 16. The missing numbers are not in the PDF. These are the ones it does work.</p>
+<table><thead><tr><th>Equation</th><th>Result</th></tr></thead><tbody>
+<tr><td>5x + 9 = 34</td><td>x = 5</td></tr>
+<tr><td>7x − 4 = 3x + 16</td><td>x = 5</td></tr>
+<tr><td>3(2x − 4) = 4x + 6</td><td>x = 9</td></tr>
+<tr><td>5(3x − 2) = 4(x + 7) + 3x</td><td>x = 19/4</td></tr>
+<tr><td>x/3 + 5 = 11</td><td>x = 18</td></tr>
+<tr><td>x/4 − 3 = 2</td><td>x = 20</td></tr>
+<tr><td>x/5 + 4 = x/2 − 6</td><td>x = 100/3</td></tr>
+<tr><td>(3x + 4) − (2x − 7) = 0</td><td>x = −11</td></tr>
+<tr><td>(5x − 3) + (2x + 9) − (x − 4) = 0</td><td>x = −5/3</td></tr>
+<tr><td>7x − {3x − [2x − (x − 5)]} = 0</td><td>x = −1</td></tr>
+</tbody></table>
+<p>On the last one, clear the innermost bracket first. 2x − (x − 5) = x + 5, then 3x − (x + 5) = 2x − 5, then 7x − (2x − 5) = 5x + 5. Set that to 0 and x = −1. A minus in front of a bracket changes every sign inside it.</p>
+
+<h2 id="profit">4. Profit and loss</h2>
+<p>SP is the selling price, CP the cost price, MP the marked price. Profit or loss is SP − CP. Positive is profit. Markup is on CP. Discount is on MP. Profit and loss percentages are always on CP, comparing CP with SP.</p>
+<ul>
+<li>Profit% = [(SP − CP) / CP] × 100. Loss% = [(CP − SP) / CP] × 100.</li>
+<li>SP = CP × (1 + profit%/100), or CP × (1 − loss%/100).</li>
+<li>CP = SP × 100 / (100 + profit%), or SP × 100 / (100 − loss%).</li>
+<li>A price that rises by a% and then falls by b% finishes at the start × (1 + a/100) × (1 − b/100). Successive discounts of a% and b% equal a single discount of a + b − (ab/100).</li>
+</ul>
+<p>The reverse method is the one to practise: from SP and the gain, recover CP. SP = ₹600 at a 20% gain means CP = 600 × 100 / 120 = ₹500. The multipliers in the notes are +40% = ×1.40, +20% = ×1.20, −10% = ×0.90, and −25% = ×0.75.</p>
+<table><thead><tr><th>Case in the notes</th><th>Result</th></tr></thead><tbody>
+<tr><td>CP ₹240, SP ₹300</td><td>Profit ₹60, which is 25%</td></tr>
+<tr><td>Sold at 10% loss for ₹450</td><td>CP = ₹500</td></tr>
+<tr><td>+20%, then 10% off</td><td>1.2 × 0.9 = 1.08, so 8% profit</td></tr>
+<tr><td>+25%, then −20%</td><td>1.25 × 0.80 = 1, so no profit and no loss</td></tr>
+<tr><td>Marked 40% above CP, then 25% off the marked price</td><td>1.40 × 0.75 = 1.05, so 5% profit</td></tr>
+<tr><td>Marked 50% above CP, then 20% off</td><td>1.50 × 0.80 = 1.20, so 20% profit</td></tr>
+</tbody></table>
+<div class="callout"><strong>Remember:</strong> discount is taken off the marked price. Profit is still measured against cost. Chain the multipliers instead of adding the percentages.</div>
+
+<h2 id="ratio">5. Ratio, averages, and mixtures</h2>
+<p>If A : B = m : n and the total is T, then A is m/(m+n) of T and B is n/(m+n) of T. A 2 : 3 split of 500 is 200 and 300. The fourth proportional in a : b = c : d is d = (b × c) / a.</p>
+<p>Average = sum / count. If the average changes, the new average is the old average plus (the change in the total) / (the new count). A symmetric run such as 48, 49, 50, 51, 52 has average 50, the middle value.</p>
+<ul>
+<li>Five numbers average 8. Remove 10. The sum was 40, then 30, over 4 numbers: the new average is 7.5.</li>
+<li>Seven numbers average 15. After adding x the average is 16. Old sum 105, new sum 128, so x = 23.</li>
+<li>20 boys averaging 60 and 30 girls averaging 70. Combined average = (1200 + 2100) / 50 = 66.</li>
+</ul>
+<h3>Alligation</h3>
+<p>To hit a mixture strength between two known strengths, the ratio of the amounts is the two differences from the target, crossed over. The strength farther from the target contributes the smaller share.</p>
+<ul>
+<li>30 L at 20% alcohol contains 6 L of alcohol. 40 L at 15% salt contains 6 L of salt.</li>
+<li>20 L at 25% alcohol. Remove 5 L and replace it with water. Alcohol left is 5 − 1.25 = 3.75 L, which is 18.75% of 20 L.</li>
+<li>10% and 30% to make 20% is 1 : 1. 20% and 50% to make 30% is 2 : 1 of the 20% and the 50%. 15% and 45% to make 30% is 1 : 1. 20% and 70% to make 50% is 2 : 3. 30% and 60% to make 45% is 1 : 1.</li>
+</ul>
+<div class="source-note"><strong>A target outside both strengths.</strong> The notes ask for 40% from 10% and 30%, and correctly say it cannot be done. Mixing two solutions cannot land outside the range between them. Ignore the 1 : 3 the absolute differences produce. That ratio is not a real mixture.</div>
+
+<h2 id="interest">6. Simple and compound interest</h2>
+<p>Simple interest is SI = (P × R × T) / 100, and the amount is A = P + SI. Working backwards, P = A / (1 + RT/100). Time in a fraction of a year is a fraction in that formula: 9 months is 0.75 year.</p>
+<table><thead><tr><th>Given in the notes</th><th>Result</th></tr></thead><tbody>
+<tr><td>₹5,000 at 8% for 2 years</td><td>SI ₹800, amount ₹5,800</td></tr>
+<tr><td>₹7,200 at 6% for 3 years</td><td>SI ₹1,296, amount ₹8,496</td></tr>
+<tr><td>₹9,000 at 10% for 1.5 years</td><td>SI ₹1,350, amount ₹10,350</td></tr>
+<tr><td>Becomes ₹6,300 in 2 years at 10%</td><td>P = ₹5,250</td></tr>
+<tr><td>Becomes ₹4,800 in 3 years at 8%</td><td>P = 4800 / 1.24 ≈ ₹3,870.97. The notes round this to ₹3,871.03.</td></tr>
+<tr><td>Becomes ₹12,000 in 4 years at 5%</td><td>The factor is 1.20, so P = ₹10,000</td></tr>
+<tr><td>₹8,000 at 12% for 9 months</td><td>SI ₹720</td></tr>
+<tr><td>Becomes ₹4,400 in 2 years at 10%</td><td>P ≈ ₹3,666.67, SI ≈ ₹733.33, so one year of that interest is about ₹366.67</td></tr>
+</tbody></table>
+<p>Compound interest uses A = P(1 + R/100)ᵀ, and CI = A − P. For two years that is P(1 + R/100)² − P. Different rates in different years are just multiplied, one factor per year.</p>
+<ul>
+<li>₹5,000 at 10% for 2 years: amount ₹6,050, CI ₹1,050.</li>
+<li>₹8,000 at 5% for 2 years: amount ₹8,820, CI ₹820.</li>
+<li>₹10,000 at 10% for 3 years: amount ₹13,310, CI ₹3,310.</li>
+<li>₹5,000 at 10% then 20%: amount ₹6,600, CI ₹1,600.</li>
+<li>₹12,000 at 5% then 10%: amount ₹13,860, CI ₹1,860.</li>
+</ul>
+
+<h2 id="work">7. Time and work, pipes, and mensuration</h2>
+<p>A person who finishes a job in x days does 1/x of it per day. Two people together do 1/x + 1/y per day, so the job takes xy / (x + y) days. Efficiency and days are reciprocals: more efficiency means fewer days.</p>
+<p>A pipe that fills in x hours contributes +1/x. A leak that empties in y hours contributes −1/y. Add the signed rates.</p>
+<ul>
+<li>A in 12 days and B in 8 days finish together in 4.8 days. A in 10 and B in 15 finish in 6 days.</li>
+<li>A in 12 days works alone for 4 days, which is 1/3 of the job. B, who takes 18 days, does the remaining 2/3 in 12 days. Total 16 days.</li>
+<li>A in 9 days works 3 days alone (1/3). Together A and B, who takes 12 days, do 7/36 per day, so the rest takes 24/7 days, about 3.43. The notes’ total is about 6.42 days.</li>
+<li>A fill in 10 hours and a leak in 15 hours give a net 1/30 per hour, so 30 hours. Fillers of 12 h and 18 h with an emptying pipe of 36 h give 1/9 per hour, so 9 hours.</li>
+</ul>
+<h3>Area, perimeter, and volume</h3>
+<table><thead><tr><th>Shape</th><th>Formulas</th><th>Worked numbers</th></tr></thead><tbody>
+<tr><td>Rectangle</td><td>Area = l × b. Perimeter = 2(l + b).</td><td>12 by 5: area 60, perimeter 34</td></tr>
+<tr><td>Square</td><td>Area = side². Perimeter = 4 × side.</td><td>Side 9 cm: area 81 cm², perimeter 36 cm</td></tr>
+<tr><td>Triangle</td><td>Area = ½ × base × height. Perimeter = the three sides.</td><td>Base 10 and height 8: area 40</td></tr>
+<tr><td>Circle</td><td>Area = πr². Circumference = 2πr. The notes use π = 22/7.</td><td>r = 7: area 154, circumference 44</td></tr>
+<tr><td>Cuboid</td><td>Volume = l × b × h. Total surface = 2(lb + bh + hl).</td><td>5 × 4 × 3: volume 60, surface 94</td></tr>
+<tr><td>Cylinder</td><td>Volume = πr²h. Curved surface = 2πrh. Total surface = 2πr(r + h).</td><td>r = 7, h = 10: volume 1540, curved 440, total 748</td></tr>
+</tbody></table>
+<div class="source-note"><strong>The triangle’s sides.</strong> The notes also list sides 10, 8, and 2 and a perimeter of 20. Those three lengths do not make a triangle: 8 + 2 is not greater than 10. Keep the area formula, which only needs base and height. Do not treat 10, 8, 2 as a real triangle.</div>
+
+<h2 id="speed">8. Time, speed, distance, trains, and clocks</h2>
+<p>Speed = distance / time. 1 km/h = 5/18 m/s, and 1 m/s = 18/5 km/h. If speed rises by x%, time falls by [x / (100 + x)] × 100 percent.</p>
+<p>Opposite directions: add the speeds. Same direction: subtract them. A train passes a pole in (length of train) / speed. It passes a platform in (train + platform) / speed. Downstream speed is boat + stream. Upstream is boat − stream.</p>
+<ul>
+<li>60 km in 2 hours is 30 km/h. 54 km/h is 54 × 5/18 = 15 m/s.</li>
+<li>Cars 210 km apart, closing at 60 and 50 km/h, meet in 210/110 ≈ 1.91 hours. The notes write 1.90.</li>
+<li>A 150 m train at 54 km/h (15 m/s) passes a pole in 10 s.</li>
+<li>A 180 m train at 72 km/h (20 m/s) passes a man walking the same way at 6 km/h (5/3 m/s). Relative speed is 55/3 m/s, and the time is about 9.82 s.</li>
+<li>Trains of 120 m at 15 m/s and 180 m at 10 m/s, approaching: relative speed 25 m/s over 300 m, so 12 s.</li>
+</ul>
+<h3>Clocks</h3>
+<p>The minute hand moves 6° per minute. The hour hand moves 0.5° per minute, which is 30° per hour. At H hours and M minutes the hands are at 30H + 0.5M degrees and 6M degrees. The angle in the notes’ first example is the absolute difference. Take the smaller of that difference and 360° minus it when the question asks for the angle between the hands.</p>
+<p>The hands overlap h hours after 12:00 at (60h) / 11 minutes past h. The notes’ shorthand “angle = |minutes − hour|” is not the formula. Use the degrees above.</p>
+<ul>
+<li>At 3:20 the hour hand is at 3×30 + 20×0.5 = 100°, and the minute hand is at 120°. The difference is 20°.</li>
+<li>A right angle between 3 and 4 satisfies |5.5t − 90| = 90. One solution is 3:00. The other is t = 180/5.5 ≈ 32.73 minutes, so about 3:32.73.</li>
+<li>The overlap between 4 and 5 is (60 × 4) / 11 = 240/11 minutes, which is 4:21 and 9/11.</li>
+</ul>
+
+<h2 id="probability">9. Permutation, combination, and probability</h2>
+<p>If one action can happen in A ways and a second, independent action in B ways, together they can happen in A × B ways. “At least one” is the total minus the “none” case.</p>
+<p>Order matters for a permutation: nPr = n! / (n − r)!. A combination only selects: nCr = n! / [r! (n − r)!].</p>
+<ul>
+<li>3-letter words from A, B, C, D with no repeat: 4 × 3 × 2 = 24. Four-digit numbers from 1 to 5 with no repeat: 5P4 = 120.</li>
+<li>Choose 3 from 8: 8C3 = 56. Committees of 4 from 7: 7C4 = 35.</li>
+<li>A team of 3 from 3 boys and 2 girls, at least one girl: 5C3 − 3C3 = 9. The notes’ larger variant, 5 boys and 3 girls choosing 3 with at least one girl, is 8C3 − 5C3 = 46.</li>
+<li>A is always on a team of 3 from 7: choose the other 2 from 6, so 15. A and B always together on a team of 3 from 6: 4 ways. Never together: 20 − 4 = 16.</li>
+<li>4 from 8 people, of whom 3 are girls, at least one girl: 8C4 − 5C4 = 65.</li>
+</ul>
+<p>P(E) = favourable / total, and P(not E) = 1 − P(E), with the probability between 0 and 1. A deck has 52 cards, 4 suits of 13, and 4 each of ace, king, queen, and jack.</p>
+<ul>
+<li>5 red and 3 blue. P(one red) = 5/8. P(two red) = 5C2 / 8C2 = 5/14.</li>
+<li>4 red, 3 blue, 2 green. P(two of the same colour) = (6 + 3 + 1) / 36 = 5/18.</li>
+<li>From that same bag, P(at least one red in three draws) = 1 − 5C3/9C3 = 37/42.</li>
+<li>5 red and 3 non-red, two drawn: P(at least one red) = 1 − 3/28 = 25/28.</li>
+<li>Two cards: P(both aces) = 4C2 / 52C2 = 1/221. P(one ace and one king) = 16/1326 = 8/663.</li>
+</ul>
+<div class="callout"><strong>Remember:</strong> nPr when the order is a different outcome, nCr when it is only a group. “At least one” is usually 1 minus the chance of none.</div>
+
+<h2 id="venn">10. Venn diagrams and data interpretation</h2>
+<p>For two sets, “only A” is A minus the overlap. “At least one” is the total minus neither. Both = A + B − (at least one). “At most one” is neither, plus only A, plus only B.</p>
+<p>Three sets have eight regions. Exactly one is the three “only” regions. Exactly two is the three pairwise-only regions. At least two is exactly two plus the centre. At most one is neither plus exactly one.</p>
+<ul>
+<li>50 students, 28 maths, 20 physics, 10 both. Only maths 18, only physics 10, at least one 38, neither 12.</li>
+<li>60 people, 35 tea, 30 coffee, 5 neither. At least one is 55, so both = 35 + 30 − 55 = 10.</li>
+<li>100 students, 60 cricket, 45 football, 25 cricket only. Both = 35, so football only = 10.</li>
+<li>100 people, 40 like A, 35 like B, 30 like C. The notes treat 10, 8, and 5 as the exactly-two regions, and 7 as all three. Only A, B, and C are then 15, 13, and 10. At least one is 68, so none is 32. Exactly two is 23, at least two is 30, exactly one is 38, at most one is 70, and exactly one or two is 61.</li>
+</ul>
+<div class="source-note"><strong>Read “A and B” carefully.</strong> In that last example the 10, 8, and 5 are the pairwise-only counts, not the full intersections. If a question’s “10 like A and B” already includes the people who like all three, subtract that centre before you compute “only A”.</div>
+<h3>Reading a table</h3>
+<p>Read the question before you total every column. Growth percent is (new − old) / old × 100.</p>
+<p>Set 1 is quarterly sales in thousands of rupees. A is 120, 150, 180, 210, total 660. B is 100, 130, 160, 190, total 580. C’s answers use 80, 90, 120, 160, total 450. A’s year is 660. B rises 90% from Q1 to Q4. A : C = 22 : 15. A is 20 ahead of B in every quarter. C’s share of 1690 is about 26.6%. The highest Q1-to-Q4 growth is C, at 100%, against A at 75% and B at 90%.</p>
+<div class="source-note"><strong>Company C, quarter 2.</strong> The source line shows 110 and also says the total used in the sums is 450, which needs 90 rather than 110. The percentages and the 22 : 15 ratio only hold with 90. Use 80, 90, 120, 160.</div>
+<p>Set 2, employees from 2022 to 2023: HR 120 → 150, Tech 200 → 260, Sales 180 → 210. Totals 500 and 620, a 24% rise. The increases in Tech and Sales are 60 and 30, so 2 : 1. Tech is 260/620 of the 2023 total, about 42%. The highest growth rate is Tech, at 30%, against HR at 25% and Sales at about 16.67%.</p>
+
+<h2 id="reasoning">11. Reasoning, data sufficiency, and a little algebra of logic</h2>
+<h3>Blood relations</h3>
+<p>Name the person the phrase is about, then step one relation at a time. The notes’ chain is: Ravi is Suresh’s father; M is N’s brother; A is B’s sister and B is C’s father, so A is C’s aunt or uncle; P is Q’s father, Q is R’s sister, and R is S’s mother, so S is P’s grandchild; X is Y’s brother and Y is Z’s mother, so X is Z’s maternal uncle; A is B’s father, C is B’s sister, and D is C’s daughter, so D is A’s granddaughter; A and B are siblings, C is A’s daughter, and D is B’s son, so C and D are first cousins.</p>
+<h3>Directions, calendars, and seats</h3>
+<p>Turning right cycles north, east, south, west. Turning left cycles north, west, south, east. Facing north, a right turn faces east. The notes’ longer walk — face south, then left, left, right, left — ends facing north.</p>
+<p>A normal year shifts the calendar by one odd day. A leap year shifts it by two. A year is a leap year when it is divisible by 4; a century year also has to be divisible by 400. In a row, the total count when someone gives “left” and “right” neighbours is left + right − 1, because that person was counted twice.</p>
+<p>Four people in a line can sit in 4! = 24 orders. Fix one person at the left end and the rest have 3! = 6 orders. Two particular people sitting together can be treated as one block: 3! × 2 = 12, and the arrangements where they are apart are the other 12.</p>
+<p>The notes also sketch one fixed row of six facing north and one circle of eight facing the centre. Those depend on the option list in the PDF. The useful habit is the same: place the person who is fixed, then the “immediate” neighbour, then the person opposite, and cross off seats that the negative clues forbid.</p>
+<p>One truth-teller among P, Q, and R: P says Q is guilty, Q says R is guilty, R says Q is innocent. Exactly one statement is true. If Q is the truth-teller, then R is guilty, P is false, and R is false. That is consistent. The notes’ other branch, taking P as the only truth, makes Q guilty instead. Check which statement is the single true one before you lock the guilty person.</p>
+<h3>Data sufficiency</h3>
+<p>The option letters in the notes are the usual ones. A: statement I alone. B: II alone. C: both together, and neither alone. D: either statement alone. E: even together, not enough. Test I by itself, then II by itself, and combine only if each one fails. A yes/no question needs one definite answer, not a number.</p>
+<table><thead><tr><th>Question</th><th>Why the notes choose that option</th></tr></thead><tbody>
+<tr><td>Value of x? I: x² = 16. II: x &gt; 0.</td><td>C. I gives ±4. II picks the positive one.</td></tr>
+<tr><td>Is x &gt; y? I: x − y = 3. II: x + y = 10.</td><td>A. I already says yes.</td></tr>
+<tr><td>Is x even? I: x² even. II: x³ even.</td><td>D, for an integer. Either forces x even.</td></tr>
+<tr><td>Value of x? I: multiple of 6. II: divisible by 3.</td><td>E. Many numbers satisfy both.</td></tr>
+<tr><td>Is x/y &gt; 1? I: x &gt; y. II: y &gt; 0.</td><td>C. I alone fails when y is negative.</td></tr>
+<tr><td>Value of x? I: x + y = 10. II: x − y = 2.</td><td>C. Adding the equations gives x = 6.</td></tr>
+<tr><td>Is x² &gt; y²? I: x &gt; y. II: x + y &gt; 0.</td><td>C. Together they fix the sign you need.</td></tr>
+<tr><td>Value of x? I: x² = y². II: x + y = 10.</td><td>C. I allows x = y or x = −y. II makes x = −y impossible, so x = y = 5.</td></tr>
+<tr><td>Is x = y? I: x² = y². II: x + y &gt; 0.</td><td>C. x = −y would make the sum 0, which II forbids, so x = y.</td></tr>
+</tbody></table>
+<h3>Syllogisms and logarithms</h3>
+<p>“All A are B” does imply “some B are A”, as long as A is not empty. “Some A are B” does not imply “all A are B”. “No A are B” is a negative: it contradicts “some A are B”.</p>
+<p>For positive a and b, and a valid base: log(ab) = log a + log b, log(a/b) = log a − log b, and log(aⁿ) = n log a.</p>
+
+<h2 id="links">12. Practice links from the notes</h2>
+<p>The original last page is a study order, not more formulas. The notes say to start with numbers, treat compound interest and permutations as basics only, and limit data interpretation to tables, pie charts, and line graphs. Mixtures are flagged as common in Zoho papers. Mensuration stays at area, perimeter, and volume.</p>
+<table><thead><tr><th>Topic</th><th>Link in the notes</th></tr></thead><tbody>
+<tr><td>Numbers</td><td><a href="https://www.indiabix.com/aptitude/numbers/" target="_blank" rel="noopener">IndiaBix numbers</a></td></tr>
+<tr><td>Percentages</td><td><a href="https://www.indiabix.com/aptitude/percentage/" target="_blank" rel="noopener">Percentages</a></td></tr>
+<tr><td>Profit and loss</td><td><a href="https://www.indiabix.com/aptitude/profit-and-loss/" target="_blank" rel="noopener">Profit and loss</a></td></tr>
+<tr><td>Ratio</td><td><a href="https://www.indiabix.com/aptitude/ratio-and-proportion/" target="_blank" rel="noopener">Ratio and proportion</a></td></tr>
+<tr><td>Averages</td><td><a href="https://www.indiabix.com/aptitude/average/" target="_blank" rel="noopener">Averages</a></td></tr>
+<tr><td>Time and distance</td><td><a href="https://www.indiabix.com/aptitude/time-and-distance/" target="_blank" rel="noopener">Time and distance</a></td></tr>
+<tr><td>Time and work</td><td><a href="https://www.indiabix.com/aptitude/time-and-work/" target="_blank" rel="noopener">Time and work</a></td></tr>
+<tr><td>Interest</td><td><a href="https://www.indiabix.com/aptitude/simple-interest/" target="_blank" rel="noopener">Simple interest</a> and <a href="https://www.indiabix.com/aptitude/compound-interest/" target="_blank" rel="noopener">compound interest</a></td></tr>
+<tr><td>Permutations</td><td><a href="https://www.indiabix.com/aptitude/permutation-and-combination/" target="_blank" rel="noopener">Permutation and combination</a></td></tr>
+<tr><td>Probability</td><td><a href="https://www.indiabix.com/aptitude/probability/" target="_blank" rel="noopener">Probability</a></td></tr>
+<tr><td>Data interpretation</td><td><a href="https://www.indiabix.com/aptitude/data-interpretation/" target="_blank" rel="noopener">Data interpretation</a></td></tr>
+<tr><td>Algebra</td><td><a href="https://www.indiabix.com/aptitude/algebra/" target="_blank" rel="noopener">Algebra</a></td></tr>
+<tr><td>Mixtures</td><td><a href="https://www.indiabix.com/aptitude/alligation-or-mixture/" target="_blank" rel="noopener">Alligation or mixture</a></td></tr>
+<tr><td>HCF and LCM</td><td><a href="https://www.indiabix.com/aptitude/hcf-and-lcm/" target="_blank" rel="noopener">HCF and LCM</a></td></tr>
+<tr><td>Mensuration</td><td><a href="https://www.indiabix.com/aptitude/area/" target="_blank" rel="noopener">Area</a></td></tr>
+<tr><td>Blood relations</td><td><a href="https://www.indiabix.com/verbal-reasoning/blood-relation/" target="_blank" rel="noopener">Blood relation</a></td></tr>
+<tr><td>Directions</td><td><a href="https://www.indiabix.com/verbal-reasoning/direction-sense-test/" target="_blank" rel="noopener">Direction sense</a></td></tr>
+<tr><td>Puzzles</td><td><a href="https://www.indiabix.com/puzzles/" target="_blank" rel="noopener">Puzzles</a></td></tr>
+<tr><td>Coding and decoding</td><td><a href="https://www.indiabix.com/verbal-reasoning/coding-decoding/" target="_blank" rel="noopener">Coding-decoding</a></td></tr>
+<tr><td>Syllogisms</td><td><a href="https://www.indiabix.com/verbal-reasoning/logical-deduction/" target="_blank" rel="noopener">Logical deduction</a></td></tr>
+<tr><td>Data sufficiency</td><td><a href="https://www.indiabix.com/data-interpretation/data-sufficiency/" target="_blank" rel="noopener">Data sufficiency</a></td></tr>
+<tr><td>Series</td><td><a href="https://www.indiabix.com/verbal-reasoning/series-completion/" target="_blank" rel="noopener">Series completion</a></td></tr>
+</tbody></table>
+<p class="note">The seating-arrangement row in the PDF points at an IndiaBix cubes-and-dice page and says to search for a seating-arrangement set. That link is not a seating chapter, so it is left off this list.</p>
+<p class="note">Original material: Aptitude and placement notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article></main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="index.html">Notes of Mube</a></div></footer>
+</body></html>

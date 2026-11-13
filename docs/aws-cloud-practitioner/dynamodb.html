@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A managed NoSQL database for key-value and document data that has to stay fast as it grows. AWS Cloud Practitioner Essentials notes by Mubendiran K.">
+<title>Amazon DynamoDB | AWS Cloud Practitioner | Notes of Mube</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><div class="wrap">
+<div class="top"><a href="../index.html">← Notes of Mube</a><a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Author portfolio ↗</a></div>
+<p class="crumb"><a href="../index.html">Notes of Mube</a> · <a href="index.html">AWS Cloud Practitioner</a></p>
+<div class="kicker">AWS Cloud Practitioner · Databases</div>
+<h1>Amazon DynamoDB</h1>
+<p class="sub">A managed NoSQL database for key-value and document data that has to stay fast as it grows.</p>
+<p class="meta">By <strong>Mubendiran K</strong> · 57-page source notes · <a href="https://drive.google.com/file/d/1Dp_bgodsbolVM8fBQmByKa2lUYms-wwY/view?usp=drivesdk" target="_blank" rel="noopener">Download the PDF version</a></p>
+<p class="meta">If you like to contribute, purchase via <a href="https://topmate.io/mubendiran_k/2406168?utm_source=public_profile&utm_campaign=mubendiran_k" target="_blank" rel="noopener">Topmate</a>.</p>
+</div></header>
+<main class="wrap layout">
+<nav class="services" aria-label="Services">
+<details>
+<summary>Services in this guide</summary>
+<input id="nav-search" type="search" placeholder="Find a service" aria-label="Find a service">
+<a class="home" href="index.html">Overview</a>
+<div class="nav-cat">Compute</div>
+<a class="item" href="ec2.html" data-name="amazon ec2 compute virtual machine instance family on-demand reserved spot savings plans dedicated host instance store">Amazon EC2</a>
+<a class="item" href="auto-scaling.html" data-name="amazon ec2 auto scaling compute dynamic predictive minimum desired maximum capacity scale out scale up cloudwatch">Amazon EC2 Auto Scaling</a>
+<a class="item" href="ecr.html" data-name="amazon ecr compute elastic container registry oci image push pull">Amazon ECR</a>
+<a class="item" href="ecs.html" data-name="amazon ecs compute elastic container service ec2 fargate orchestration">Amazon ECS</a>
+<a class="item" href="eks.html" data-name="amazon eks compute kubernetes elastic kubernetes service">Amazon EKS</a>
+<a class="item" href="eventbridge.html" data-name="amazon eventbridge compute event bus event-driven serverless">Amazon EventBridge</a>
+<a class="item" href="lightsail.html" data-name="amazon lightsail compute vps simple website">Amazon Lightsail</a>
+<a class="item" href="sns.html" data-name="amazon sns compute simple notification service pub sub topic fan-out">Amazon SNS</a>
+<a class="item" href="sqs.html" data-name="amazon sqs compute simple queue service message queue decoupling">Amazon SQS</a>
+<a class="item" href="batch.html" data-name="aws batch compute batch jobs hpc scientific">AWS Batch</a>
+<a class="item" href="elastic-beanstalk.html" data-name="aws elastic beanstalk compute web app paas deploy">AWS Elastic Beanstalk</a>
+<a class="item" href="fargate.html" data-name="aws fargate compute serverless containers">AWS Fargate</a>
+<a class="item" href="lambda.html" data-name="aws lambda compute serverless function memory billing event">AWS Lambda</a>
+<a class="item" href="outposts.html" data-name="aws outposts compute hybrid on-premises rack">AWS Outposts</a>
+<a class="item" href="elb.html" data-name="elastic load balancing compute load balancer round robin least connections ip hash response time">Elastic Load Balancing</a>
+<div class="nav-cat">Networking</div>
+<a class="item" href="api-gateway.html" data-name="amazon api gateway networking rest api http">Amazon API Gateway</a>
+<a class="item" href="cloudfront.html" data-name="amazon cloudfront networking cdn edge location cache">Amazon CloudFront</a>
+<a class="item" href="route-53.html" data-name="amazon route 53 networking dns domain name">Amazon Route 53</a>
+<a class="item" href="vpc.html" data-name="amazon vpc networking subnet public private internet gateway security group nacl stateful stateless">Amazon VPC</a>
+<a class="item" href="client-vpn.html" data-name="aws client vpn networking openvpn remote access">AWS Client VPN</a>
+<a class="item" href="direct-connect.html" data-name="aws direct connect networking dedicated connection fibre migration">AWS Direct Connect</a>
+<a class="item" href="global-accelerator.html" data-name="aws global accelerator networking anycast performance">AWS Global Accelerator</a>
+<a class="item" href="privatelink.html" data-name="aws privatelink networking private endpoint vpc endpoint">AWS PrivateLink</a>
+<a class="item" href="site-to-site-vpn.html" data-name="aws site-to-site vpn networking virtual private gateway vpn ipsec hybrid">AWS Site-to-Site VPN</a>
+<a class="item" href="transit-gateway.html" data-name="aws transit gateway networking hub spoke">AWS Transit Gateway</a>
+<a class="item" href="nat-gateway.html" data-name="nat gateway networking nat outbound private subnet">NAT Gateway</a>
+<div class="nav-cat">Storage</div>
+<a class="item" href="ebs.html" data-name="amazon ebs storage elastic block store snapshot iops data lifecycle manager volume">Amazon EBS</a>
+<a class="item" href="efs.html" data-name="amazon efs storage elastic file system nfs file storage">Amazon EFS</a>
+<a class="item" href="fsx.html" data-name="amazon fsx storage windows lustre openzfs ontap file server">Amazon FSx</a>
+<a class="item" href="s3.html" data-name="amazon s3 storage simple storage service bucket object storage class glacier lifecycle intelligent tiering outposts">Amazon S3</a>
+<a class="item" href="elastic-disaster-recovery.html" data-name="aws elastic disaster recovery storage drs disaster recovery replication rpo">AWS Elastic Disaster Recovery</a>
+<a class="item" href="storage-gateway.html" data-name="aws storage gateway storage file gateway volume gateway tape gateway cached stored iscsi hybrid">AWS Storage Gateway</a>
+<div class="nav-cat">Databases</div>
+<a class="item" href="aurora.html" data-name="amazon aurora databases mysql postgresql high availability">Amazon Aurora</a>
+<a class="item" href="documentdb.html" data-name="amazon documentdb databases mongodb json document">Amazon DocumentDB</a>
+<a class="item active" href="dynamodb.html" data-name="amazon dynamodb databases nosql key-value document serverless" aria-current="page">Amazon DynamoDB</a>
+<a class="item" href="elasticache.html" data-name="amazon elasticache databases redis valkey memcached cache">Amazon ElastiCache</a>
+<a class="item" href="neptune.html" data-name="amazon neptune databases graph rdf property graph social">Amazon Neptune</a>
+<a class="item" href="rds.html" data-name="amazon rds databases relational mysql postgres sql server mariadb oracle aurora">Amazon RDS</a>
+<a class="item" href="backup.html" data-name="aws backup databases central backup">AWS Backup</a>
+<div class="nav-cat">AI and machine learning</div>
+<a class="item" href="bedrock.html" data-name="amazon bedrock ai and machine learning foundation model generative ai">Amazon Bedrock</a>
+<a class="item" href="comprehend.html" data-name="amazon comprehend ai and machine learning nlp sentiment language">Amazon Comprehend</a>
+<a class="item" href="kendra.html" data-name="amazon kendra ai and machine learning nlp search enterprise chatbot">Amazon Kendra</a>
+<a class="item" href="lex.html" data-name="amazon lex ai and machine learning chatbot asr nlp conversational">Amazon Lex</a>
+<a class="item" href="personalize.html" data-name="amazon personalize ai and machine learning recommendations personalization">Amazon Personalize</a>
+<a class="item" href="polly.html" data-name="amazon polly ai and machine learning text to speech tts">Amazon Polly</a>
+<a class="item" href="amazon-q.html" data-name="amazon q ai and machine learning q business q developer generative ai">Amazon Q</a>
+<a class="item" href="rekognition.html" data-name="amazon rekognition ai and machine learning computer vision image video">Amazon Rekognition</a>
+<a class="item" href="sagemaker.html" data-name="amazon sagemaker ai ai and machine learning sagemaker jumpstart mlops foundation model pytorch tensorflow mxnet">Amazon SageMaker AI</a>
+<a class="item" href="textract.html" data-name="amazon textract ai and machine learning ocr forms tables">Amazon Textract</a>
+<a class="item" href="transcribe.html" data-name="amazon transcribe ai and machine learning speech to text asr">Amazon Transcribe</a>
+<a class="item" href="translate.html" data-name="amazon translate ai and machine learning translation language">Amazon Translate</a>
+<div class="nav-cat">Analytics</div>
+<a class="item" href="athena.html" data-name="amazon athena analytics serverless sql query s3">Amazon Athena</a>
+<a class="item" href="firehose.html" data-name="amazon data firehose analytics kinesis firehose delivery stream">Amazon Data Firehose</a>
+<a class="item" href="emr.html" data-name="amazon emr analytics elastic mapreduce hadoop spark hive big data">Amazon EMR</a>
+<a class="item" href="kinesis.html" data-name="amazon kinesis data streams analytics streaming real-time ingestion">Amazon Kinesis Data Streams</a>
+<a class="item" href="opensearch.html" data-name="amazon opensearch service analytics elasticsearch search logs">Amazon OpenSearch Service</a>
+<a class="item" href="quicksight.html" data-name="amazon quicksight analytics bi dashboard amazon q">Amazon QuickSight</a>
+<a class="item" href="redshift.html" data-name="amazon redshift analytics data warehouse analytics">Amazon Redshift</a>
+<a class="item" href="glue.html" data-name="aws glue analytics etl data catalog glue">AWS Glue</a>
+<div class="nav-cat">Security</div>
+<a class="item" href="detective.html" data-name="amazon detective security investigation root cause">Amazon Detective</a>
+<a class="item" href="guardduty.html" data-name="amazon guardduty security threat detection ids lambda remediation">Amazon GuardDuty</a>
+<a class="item" href="inspector.html" data-name="amazon inspector security vulnerability assessment ec2">Amazon Inspector</a>
+<a class="item" href="macie.html" data-name="amazon macie security sensitive data pii s3 discovery">Amazon Macie</a>
+<a class="item" href="certificate-manager.html" data-name="aws certificate manager security acm tls ssl https">AWS Certificate Manager</a>
+<a class="item" href="iam.html" data-name="aws iam security identity access management least privilege mfa iam identity center sso federation users groups roles">AWS IAM</a>
+<a class="item" href="kms.html" data-name="aws kms security key management encryption cmk">AWS KMS</a>
+<a class="item" href="secrets-manager.html" data-name="aws secrets manager security rotation credentials password">AWS Secrets Manager</a>
+<a class="item" href="security-hub.html" data-name="aws security hub security findings compliance ttr">AWS Security Hub</a>
+<a class="item" href="shield.html" data-name="aws shield security ddos dos shield standard shield advanced">AWS Shield</a>
+<a class="item" href="systems-manager.html" data-name="aws systems manager security ssm patch nodes parameter">AWS Systems Manager</a>
+<a class="item" href="waf.html" data-name="aws waf security web application firewall web acl">AWS WAF</a>
+<div class="nav-cat">Governance</div>
+<a class="item" href="cloudwatch.html" data-name="amazon cloudwatch governance metrics alarms logs dashboards monitoring">Amazon CloudWatch</a>
+<a class="item" href="artifact.html" data-name="aws artifact governance compliance reports agreements soc">AWS Artifact</a>
+<a class="item" href="audit-manager.html" data-name="aws audit manager governance audit evidence compliance">AWS Audit Manager</a>
+<a class="item" href="cloudtrail.html" data-name="aws cloudtrail governance audit api logs insights 90 days">AWS CloudTrail</a>
+<a class="item" href="config.html" data-name="aws config governance configuration compliance drift">AWS Config</a>
+<a class="item" href="control-tower.html" data-name="aws control tower governance landing zone account factory guardrails controls">AWS Control Tower</a>
+<a class="item" href="health-dashboard.html" data-name="aws health dashboard governance health api personal health dashboard support">AWS Health Dashboard</a>
+<a class="item" href="license-manager.html" data-name="aws license manager governance license compliance byol">AWS License Manager</a>
+<a class="item" href="organizations.html" data-name="aws organizations governance ou scp management account organizational unit">AWS Organizations</a>
+<a class="item" href="service-catalog.html" data-name="aws service catalog governance portfolio products self-service">AWS Service Catalog</a>
+<a class="item" href="trusted-advisor.html" data-name="aws trusted advisor governance checks support plan cost security">AWS Trusted Advisor</a>
+<a class="item" href="access-analyzer.html" data-name="iam access analyzer governance external access policy validation least privilege">IAM Access Analyzer</a>
+<div class="nav-cat">Migration</div>
+<a class="item" href="application-discovery.html" data-name="aws application discovery service migration discovery inventory dependency">AWS Application Discovery Service</a>
+<a class="item" href="mgn.html" data-name="aws application migration service migration mgn application migration service lift and shift">AWS Application Migration Service</a>
+<a class="item" href="dms.html" data-name="aws database migration service migration database migration homogeneous heterogeneous replication">AWS Database Migration Service</a>
+<a class="item" href="datasync.html" data-name="aws datasync migration transfer files nfs smb">AWS DataSync</a>
+<a class="item" href="migration-evaluator.html" data-name="aws migration evaluator migration assessment business case tco">AWS Migration Evaluator</a>
+<a class="item" href="migration-hub.html" data-name="aws migration hub migration tracking migration program">AWS Migration Hub</a>
+<a class="item" href="sct.html" data-name="aws schema conversion tool migration schema conversion heterogeneous">AWS Schema Conversion Tool</a>
+<a class="item" href="snowball.html" data-name="aws snowball edge migration snowball edge offline nvme petabyte">AWS Snowball Edge</a>
+<a class="item" href="transfer-family.html" data-name="aws transfer family migration sftp ftps ftp file transfer">AWS Transfer Family</a>
+<a class="item" href="migration-strategies.html" data-name="migration phases and the 7 rs migration 7 rs caf rehost refactor replatform relocate repurchase retain retire cloud adoption framework">Migration phases and the 7 Rs</a>
+<div class="nav-cat">Developer and applications</div>
+<a class="item" href="appstream.html" data-name="amazon appstream 2.0 developer and applications application streaming saas">Amazon AppStream 2.0</a>
+<a class="item" href="connect.html" data-name="amazon connect developer and applications contact center call center">Amazon Connect</a>
+<a class="item" href="ses.html" data-name="amazon ses developer and applications simple email service smtp mail">Amazon SES</a>
+<a class="item" href="workspaces.html" data-name="amazon workspaces developer and applications vdi desktop secure browser end user computing">Amazon WorkSpaces</a>
+<a class="item" href="amplify.html" data-name="aws amplify developer and applications fullstack hosting netlify">AWS Amplify</a>
+<a class="item" href="appsync.html" data-name="aws appsync developer and applications graphql api">AWS AppSync</a>
+<a class="item" href="cloudformation.html" data-name="aws cloudformation developer and applications iac template yaml json terraform">AWS CloudFormation</a>
+<a class="item" href="codebuild.html" data-name="aws codebuild developer and applications ci build">AWS CodeBuild</a>
+<a class="item" href="codepipeline.html" data-name="aws codepipeline developer and applications cicd pipeline jenkins github actions">AWS CodePipeline</a>
+<a class="item" href="iot-core.html" data-name="aws iot core developer and applications iot devices mqtt">AWS IoT Core</a>
+<a class="item" href="well-architected.html" data-name="aws well-architected tool developer and applications six pillars operational excellence security reliability performance cost sustainability">AWS Well-Architected Tool</a>
+<a class="item" href="xray.html" data-name="aws x-ray developer and applications tracing distributed debug">AWS X-Ray</a>
+<p class="nav-empty" id="nav-empty">No service matches.</p>
+</details></nav>
+<article>
+<p>DynamoDB is the notes’ fully managed NoSQL database. It serves both document data and key-value data, with the promise of fast, predictable performance and a schema that can change as the application does.</p>
+<h2>When the notes choose it over RDS</h2>
+
+<p>RDS and Aurora fit tables, joins, and a relational model. DynamoDB fits high-traffic access by a key, or by a document, where the shape of each item does not have to match a fixed set of columns. The notes stress seamless scaling: you are not moving to a bigger database server as the classic first response to load.</p>
+
+<div class="callout"><strong>Remember:</strong> DynamoDB is managed NoSQL for key-value and documents. Reach for it when the notes say flexible schema and high, steady performance.</div>
+<h2>Keep going</h2><ul><li><a href="rds.html">Amazon RDS</a> — A managed relational database: backups, patching, and Multi-AZ, on engines you already know.</li><li><a href="aurora.html">Amazon Aurora</a> — A MySQL- and PostgreSQL-compatible relational database built to cut wasted I/O.</li><li><a href="elasticache.html">Amazon ElastiCache</a> — A managed in-memory cache so repeat reads do not keep hitting the database.</li><li><a href="documentdb.html">Amazon DocumentDB</a> — A managed document database that works with MongoDB workloads.</li></ul>
+<nav class="pager" aria-label="Adjacent pages"><a class="prev" href="documentdb.html"><small>Previous</small><strong>Amazon DocumentDB</strong></a><a class="next" href="elasticache.html"><small>Next</small><strong>Amazon ElastiCache</strong></a></nav>
+<p class="note">Original material: AWS Cloud Practitioner Essentials notes by Mubendiran K. Shared for educational and personal learning purposes. Please retain author attribution when redistributing.</p>
+</article>
+</main>
+<footer><div class="wrap">© Mubendiran K · <a href="https://mubendiran.github.io/MUBENDIRAN" target="_blank" rel="noopener">Portfolio</a> · <a href="../index.html">Notes of Mube</a> · <a href="index.html">This guide</a></div></footer>
+
+<script>
+const navSearch = document.getElementById('nav-search');
+const navEmpty = document.getElementById('nav-empty');
+if (navSearch) {
+  navSearch.addEventListener('input', () => {
+    const query = navSearch.value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll('nav.services a.item').forEach(a => {
+      const match = !query || (a.dataset.name || '').includes(query);
+      a.hidden = !match;
+      if (match) shown++;
+    });
+    document.querySelectorAll('nav.services .nav-cat').forEach(cat => {
+      let n = cat.nextElementSibling;
+      let any = false;
+      while (n && !n.classList.contains('nav-cat')) {
+        if (n.matches('a.item') && !n.hidden) any = true;
+        n = n.nextElementSibling;
+      }
+      cat.hidden = !!query && !any;
+    });
+    if (navEmpty) navEmpty.style.display = shown ? 'none' : 'block';
+  });
+}
+const box = document.querySelector('nav.services details');
+if (box && window.matchMedia('(min-width: 861px)').matches) box.open = true;
+const dir = document.getElementById('dir-search');
+if (dir) {
+  const cards = [...document.querySelectorAll('a.svc')];
+  const groups = [...document.querySelectorAll('.group')];
+  const empty = document.getElementById('dir-empty');
+  dir.addEventListener('input', () => {
+    const query = dir.value.trim().toLowerCase();
+    let shown = 0;
+    cards.forEach(card => {
+      const match = (card.dataset.search || '').includes(query);
+      card.hidden = !match;
+      if (match) shown++;
+    });
+    groups.forEach(group => {
+      group.hidden = ![...group.querySelectorAll('a.svc')].some(card => !card.hidden);
+    });
+    if (empty) empty.hidden = shown !== 0;
+  });
+}
+</script>
+
+</body>
+</html>

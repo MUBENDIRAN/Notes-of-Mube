@@ -1,0 +1,27 @@
+# Original notes stay local. The site publishes HTML, not the source files.
+*.pdf
+*.docx
+*.doc
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+~$*
+
+# OS and tool junk
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.tmp
+*.zip
+*.rar
+*.7z
+*.log
+*.bak
+.env
+.env.*
+
+# Python
+__pycache__/
+*.pyc
